@@ -19,13 +19,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         this.mViewHolder.gotoNews = findViewById(R.id.goto_news);
+
+        this.mViewHolder.gotoNews.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.goto_news) {
-            Intent goto_news = new Intent(this, NewsActivity.class);
-            startActivity(goto_news);
+            Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
+            startActivity(intent);
         }
     }
 
