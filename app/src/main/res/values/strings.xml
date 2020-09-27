@@ -3,4 +3,23 @@
     <string name="insira_seu_cep">Insira seu CEP</string>
     <string name="data">Data</string>
     <string name="projeto_gua">Projeto Água</string>
+    <string name="selecione_a_data">selecione a data</string>
+    <string name="report_description">Aqui você poder denunciar um incidente diretamente ao SAAE</string>
+    <string name="cep">CEP</string>
+    <string name="nome_opcional">Nome (opcional)</string>
+    <string name="descricao">Descrição</string>
+    <string name="enviar">Enviar</string>
+    <string name="anexos_opcional">Anexos (opcional):</string>
+    <string name="localizacao_manual">Localização manual</string>
+    <string name="reportar_erro">Reportar Erro</string>
+    <string name="whatsapp_do_saae">Whatsapp do SAAE</string>
+    <string name="site_do_saae">Site do SAAE</string>
+    <string name="whatsapp_da_prefeitura">Whatsapp da prefeitura</string>
+    <string name="site_da_prefeitura">Site da prefeitura</string>
+    <string name="contatos">Contatos:</string>
+    <string name="notificar_not_cias">Notificar notícias</string>
+    <string name="notificar_avisos">Notificar avisos</string>
+    <string name="notificar_emerg_ncias">Notificar emergências</string>
+    <string name="configuracoes">Configurações</string>
+    <string name="in_cio">Início</string>
 </resources>
