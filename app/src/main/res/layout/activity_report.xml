@@ -96,7 +96,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/nav_icons"
-        android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/screen_div"
         android:gravity="center"

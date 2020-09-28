@@ -1,20 +1,32 @@
 package com.yach.projetoagua.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.yach.projetoagua.R;
 
 import java.util.Calendar;
+
+import static com.yach.projetoagua.R.color.LIGHT_GREY;
+import static com.yach.projetoagua.R.color.WHITE;
+import static com.yach.projetoagua.R.color.newsCardBodyColor;
+import static com.yach.projetoagua.R.color.newsCardColor;
 
 
 public class NewsActivity extends AppCompatActivity implements View.OnClickListener {
@@ -29,10 +41,12 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         this.mViewHolder.gotoHome = findViewById(R.id.icon_home);
         this.mViewHolder.gotoReport = findViewById(R.id.icon_report);
         this.mViewHolder.gotoSettings = findViewById(R.id.icon_settings);
+        this.mViewHolder.newsRefresh = findViewById(R.id.icon_news);
 
         this.mViewHolder.gotoHome.setOnClickListener(this);
         this.mViewHolder.gotoReport.setOnClickListener(this);
         this.mViewHolder.gotoSettings.setOnClickListener(this);
+        this.mViewHolder.newsRefresh.setOnClickListener(this);
 
 
         this.mViewHolder.insertCep = findViewById(R.id.insert_cep);
@@ -42,6 +56,7 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         this.mViewHolder.selectDate.setInputType(InputType.TYPE_NULL);
         this.mViewHolder.selectDate.setOnClickListener(this);
 
+        this.mViewHolder.newsCards = findViewById(R.id.news_simple_cards);
     }
 
     @Override
@@ -94,6 +109,81 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
         }
+
+        if(v.getId() == R.id.icon_news) {
+            String news_content = "Bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra";
+            populateNewsCards("Boa noite", news_content, "28/09/2020");
+        }
+    }
+
+    public void populateNewsCards(String title, String news_content, String date) {
+        LinearLayout newsTextBody = new LinearLayout(getApplicationContext());
+        LinearLayout newsCardBody = new LinearLayout(getApplicationContext());
+
+        CardView cardView = new CardView(getApplicationContext());
+
+        TextView newsTitle = new TextView(getApplicationContext());
+        TextView newsDate = new TextView(getApplicationContext());
+        TextView newsText = new TextView(getApplicationContext());
+
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.setMargins(10, 10, 10, 10);
+
+        LinearLayout.LayoutParams titleBarParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        cardView.setLayoutParams(layoutParams);
+
+        cardView.setRadius(15);
+        cardView.setBackgroundColor(getResources().getColor(newsCardColor));
+        cardView.setMaxCardElevation(30);
+        cardView.setMaxCardElevation(6);
+
+        //NEWS TITLE
+        newsCardBody.setOrientation(LinearLayout.VERTICAL);
+        newsCardBody.setLayoutParams(titleBarParams);
+
+        newsTitle.setPadding(10,0,10,0);
+        newsTitle.setText(title);
+        newsTitle.setGravity(Gravity.START);
+        newsTitle.setTextColor(getResources().getColor(WHITE));
+        newsTitle.setTypeface(Typeface.DEFAULT_BOLD);
+        newsTitle.setTextSize(22);
+
+        newsDate.setPadding(10,10,10,10);
+        newsDate.setText(date);
+        newsDate.setGravity(Gravity.END);
+        newsDate.setTextColor(getResources().getColor(LIGHT_GREY));
+        newsDate.setTextSize(14);
+        //
+
+        //NEWS CONTENT
+        newsTextBody.setLayoutParams(layoutParams);
+        newsTextBody.setBackgroundResource(R.drawable.news_content_background);
+
+        newsText.setLayoutParams(layoutParams);
+        newsText.setText(news_content);
+        newsText.setTextColor(getResources().getColor(newsCardBodyColor));
+        newsText.setGravity(Gravity.START);
+        newsText.setTextSize(12);
+        //
+
+        newsCardBody.addView(newsTitle);
+        newsCardBody.addView(newsDate);
+
+        newsTextBody.addView(newsText);
+        newsCardBody.addView(newsTextBody);
+
+        cardView.addView(newsCardBody);
+
+
+        this.mViewHolder.newsCards.addView(cardView);
     }
 
     private static class ViewHolder {
@@ -104,5 +194,8 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         ImageButton gotoHome;
         ImageButton gotoReport;
         ImageButton gotoSettings;
+        ImageButton newsRefresh;
+
+        LinearLayout newsCards;
     }
 }
