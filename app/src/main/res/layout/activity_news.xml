@@ -3,20 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:backgroundTint="#000F5E"
+    android:backgroundTintMode="screen"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
     tools:context=".ui.NewsActivity"
-    tools:ignore="ExtraText"
-    android:padding="10dp">
+    tools:ignore="ExtraText">
 
-
-    <TextView
+    <LinearLayout
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="15dp"
-        android:text="@string/projeto_gua"
-        android:textSize="25sp" />
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/title_background"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="306dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="3dp"
+            android:contentDescription="@string/aqua_nova"
+            android:paddingHorizontal="15dp"
+            android:src="@drawable/logo" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/nav_icons"
@@ -24,101 +37,154 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp">
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/item_container"
+        android:gravity="center"
+        android:paddingVertical="5dp">
 
 
         <ImageButton
             android:id="@+id/icon_home"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_news"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_selected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_report"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_settings"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/insert_cep"
-        android:layout_width="300dp"
+    <LinearLayout
+        android:id="@+id/noticias"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/nav_icons"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:autofillHints="postal_code"
-        android:hint="@string/insira_seu_cep"
-        android:inputType="number"
-        android:maxLength="8" />
-
-    <LinearLayout
-        android:id="@+id/date_and_button"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/insert_cep"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
+        android:background="@drawable/screen_div"
         android:orientation="horizontal">
 
-
-        <Button
-            android:id="@+id/select_date"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/selecione_a_data"
-            android:textAlignment="center"
-            android:textSize="15sp" />
-
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/refresh_button"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="R" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity=""
+            android:text="Notícias"
+            android:textAlignment="center"
+            android:textColor="#fff"
+            android:textSize="28sp"
+            tools:ignore="RtlCompat" />
 
     </LinearLayout>
-
 
     <ScrollView
         android:id="@+id/news_cards"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/date_and_button"
+        android:layout_below="@id/noticias"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
-        android:layout_alignParentBottom="true">
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/item_container"
+        android:padding="10dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <EditText
+                android:id="@+id/insert_cep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                android:autofillHints="postal_code"
+                android:background="@drawable/edittext_background"
+                android:hint="@string/insira_seu_cep"
+                android:inputType="number"
+                android:maxLength="8"
+                android:padding="10dp" />
+
+            <LinearLayout
+                android:id="@+id/date_and_button"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/insert_cep"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/select_date"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_background"
+                    android:gravity="center"
+                    android:text="@string/selecione_a_data"
+                    android:textAlignment="center"
+                    android:textColor="#fff"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/refresh_button"
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_background"
+                    android:contentDescription="@string/botao_de_atualizar"
+                    android:padding="10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_refresh_icon" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
 
 
     </ScrollView>
-
 
 </RelativeLayout>

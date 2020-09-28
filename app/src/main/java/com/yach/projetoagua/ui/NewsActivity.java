@@ -99,7 +99,7 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
     private static class ViewHolder {
         EditText insertCep;
         Button selectDate;
-        Button refreshButton;
+        ImageButton refreshButton;
 
         ImageButton gotoHome;
         ImageButton gotoReport;

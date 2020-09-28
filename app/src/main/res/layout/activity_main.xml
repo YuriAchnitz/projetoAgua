@@ -1,21 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:backgroundTint="#000F5E"
+    android:backgroundTintMode="screen"
     tools:context=".ui.MainActivity"
-    tools:ignore="ExtraText"
-    android:padding="10dp">
+    tools:ignore="ExtraText">
 
-    <TextView
+    <LinearLayout
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="15dp"
-        android:text="@string/projeto_gua"
-        android:textSize="25sp" />
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/title_background"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="306dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="3dp"
+            android:contentDescription="@string/aqua_nova"
+            android:paddingHorizontal="15dp"
+            android:src="@drawable/logo" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/nav_icons"
@@ -23,61 +36,92 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp">
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/item_container"
+        android:gravity="center"
+        android:paddingVertical="5dp">
 
 
         <ImageButton
             android:id="@+id/icon_home"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_selected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_news"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_report"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_settings"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/inicio"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/in_cio"
         android:layout_below="@id/nav_icons"
         android:layout_centerHorizontal="true"
-        android:textSize="32sp"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/screen_div"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity=""
+            android:text="@string/in_cio"
+            android:textAlignment="center"
+            android:textColor="#fff"
+            android:textSize="28sp"
+            tools:ignore="RtlCompat" />
+
+    </LinearLayout>
+
 
     <ScrollView
         android:id="@+id/cards_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/inicio"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
-        android:layout_alignParentBottom="true">
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/item_container">
 
 
     </ScrollView>

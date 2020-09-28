@@ -3,20 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:background="@drawable/background"
+    android:backgroundTint="#000F5E"
+    android:backgroundTintMode="screen"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
     tools:context=".ui.SettingsActivity"
     tools:ignore="ExtraText">
 
 
-    <TextView
+    <LinearLayout
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="15dp"
-        android:text="@string/projeto_gua"
-        android:textSize="25sp" />
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/title_background"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="306dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="3dp"
+            android:contentDescription="@string/aqua_nova"
+            android:paddingHorizontal="15dp"
+            android:src="@drawable/logo" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/nav_icons"
@@ -24,93 +38,134 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp">
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/item_container"
+        android:gravity="center"
+        android:paddingVertical="5dp">
 
 
         <ImageButton
             android:id="@+id/icon_home"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_news"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_report"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_unselected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
 
         <ImageButton
             android:id="@+id/icon_settings"
             android:layout_width="75dp"
-            android:layout_height="75dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ic_icone_report" />
+            android:background="@drawable/main_button_selected"
+            android:paddingHorizontal="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_icone_report" />
+
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/settings_info"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/nav_icons"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
-        android:text="@string/configuracoes"
-        android:textAlignment="center"
-        android:textSize="30sp" />
+        android:background="@drawable/screen_div"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/configuracoes"
+            android:textAlignment="center"
+            android:textColor="#fff"
+            android:textSize="30sp" />
+
+    </LinearLayout>
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_info"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/item_container"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
 
 
             <LinearLayout
                 android:id="@+id/switches"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="20dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
 
                 <Switch
-                    android:layout_width="match_parent"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_background"
+                    android:padding="5dp"
                     android:text="@string/notificar_emerg_ncias"
+                    android:textColor="#fff"
                     android:textSize="20sp"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <Switch
-                    android:layout_width="match_parent"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_background"
+                    android:padding="5dp"
                     android:text="@string/notificar_avisos"
+                    android:textColor="#fff"
                     android:textSize="20sp"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <Switch
-                    android:layout_width="match_parent"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_background"
+                    android:padding="5dp"
                     android:text="@string/notificar_not_cias"
+                    android:textColor="#fff"
                     android:textSize="20sp"
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
             </LinearLayout>
@@ -123,9 +178,11 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
                 android:autofillHints="postal_code"
+                android:background="@drawable/edittext_background"
                 android:hint="@string/cep"
                 android:inputType="number"
-                android:maxLength="8" />
+                android:maxLength="8"
+                android:padding="5dp" />
 
             <Button
                 android:id="@+id/manual_cep"
@@ -134,12 +191,15 @@
                 android:layout_below="@id/settings_cep"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="25dp"
+                android:background="@drawable/button_background"
+                android:padding="10dp"
                 android:text="@string/localizacao_manual"
+                android:textColor="#fff"
                 android:textSize="13sp" />
 
             <LinearLayout
                 android:id="@+id/contact_buttons"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/manual_cep"
                 android:layout_centerHorizontal="true"
@@ -147,30 +207,50 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/screen_div"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:text="@string/contatos"
-                    android:textSize="20sp" />
+                    android:textColor="#fff"
+                    android:textSize="24sp" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/site_da_prefeitura" />
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_background"
+                    android:padding="10dp"
+                    android:text="@string/site_da_prefeitura"
+                    android:textColor="#fff" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/whatsapp_da_prefeitura" />
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_background"
+                    android:padding="10dp"
+                    android:text="@string/whatsapp_da_prefeitura"
+                    android:textColor="#fff" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/site_do_saae" />
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/button_background"
+                    android:padding="10dp"
+                    android:text="@string/site_do_saae"
+                    android:textColor="#fff" />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/whatsapp_do_saae" />
+                    android:background="@drawable/button_background"
+                    android:padding="10dp"
+                    android:text="@string/whatsapp_do_saae"
+                    android:textColor="#fff" />
 
             </LinearLayout>
 
@@ -179,7 +259,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/contact_buttons"
                 android:layout_centerHorizontal="true"
-                android:text="@string/reportar_erro" />
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/button_background"
+                android:padding="10dp"
+                android:text="@string/reportar_erro"
+                android:textColor="#fff" />
 
         </RelativeLayout>
     </ScrollView>
