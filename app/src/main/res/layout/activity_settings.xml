@@ -117,9 +117,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/settings_info"
         android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/item_container"
-        android:padding="10dp"
-        android:layout_marginBottom="10dp">
+        android:padding="10dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -133,8 +134,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="20dp"
-                android:orientation="vertical"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <Switch
                     android:layout_width="300dp"

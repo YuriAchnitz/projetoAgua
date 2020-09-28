@@ -96,15 +96,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/nav_icons"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/screen_div"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:paddingHorizontal="20dp"
             android:text="@string/report_description"
             android:textAlignment="center"
