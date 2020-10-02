@@ -97,22 +97,28 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
 
         if (v.getId() == R.id.icon_home) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(intent);
         }
 
         if (v.getId() == R.id.icon_report) {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(intent);
         }
 
         if (v.getId() == R.id.icon_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(intent);
         }
 
         if(v.getId() == R.id.icon_news) {
-            String news_content = "Bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra bom dia porra";
-            populateNewsCards("Boa noite", news_content, "28/09/2020");
+            String news_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam bibendum orci ligula, in imperdiet metus hendrerit a. Nunc maximus tortor eget orci mattis, eget convallis diam sagittis.";
+            populateNewsCards("Título da notícia", news_content, "28/09/2020");
         }
     }
 
@@ -141,13 +147,14 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         cardView.setLayoutParams(layoutParams);
 
         cardView.setRadius(15);
-        cardView.setBackgroundColor(getResources().getColor(newsCardColor));
+        cardView.setBackgroundResource(R.drawable.news_card_background);
         cardView.setMaxCardElevation(30);
         cardView.setMaxCardElevation(6);
 
         //NEWS TITLE
         newsCardBody.setOrientation(LinearLayout.VERTICAL);
         newsCardBody.setLayoutParams(titleBarParams);
+        newsCardBody.setLayoutParams(layoutParams);
 
         newsTitle.setPadding(10,0,10,0);
         newsTitle.setText(title);

@@ -162,7 +162,7 @@
             <EditText
                 android:id="@+id/report_description"
                 android:layout_width="match_parent"
-                android:layout_height="182dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/report_cep"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="15dp"
@@ -171,8 +171,7 @@
                 android:gravity="start"
                 android:hint="@string/descricao"
                 android:inputType="textMultiLine"
-                android:lines="8"
-                android:maxLength="256"
+                android:maxLength="300"
                 android:overScrollMode="always"
                 android:padding="5dp"
                 android:scrollbarStyle="insideInset"

@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -17,10 +18,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yach.projetoagua.R;
 
+import org.json.JSONObject;
+
 import java.util.Calendar;
+
+import cz.msebera.android.httpclient.entity.mime.Header;
 
 import static com.yach.projetoagua.R.color.BLACK;
 import static com.yach.projetoagua.R.color.LIGHT_GREY;
@@ -62,34 +70,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.icon_news) {
             Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(intent);
         }
 
         if (v.getId() == R.id.icon_report) {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(intent);
         }
 
         if (v.getId() == R.id.icon_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(intent);
         }
 
         if (v.getId() == R.id.icon_home) {
+            String emergency_title = "Atenção!";
             String emergency_content = "Falta de água iminente";
-            populateEmergencyCards(emergency_content);
+            populateEmergencyCards(emergency_title, emergency_content);
 
+            String advice_title = "Aviso";
             String advice_content = "Economize água";
-            populateAdviceCards(advice_content);
+            populateAdviceCards(advice_title, advice_content);
 
             String date = "28/09/2020";
-            String news_content = "Boa noite caralho boa noite caralho boa noite caralho boa noite caralho boa noite caralho boa noite caralho";
-            populateNewsCards("Bom Dia", news_content, date);
-            populateNewsCards("Bom Dia", news_content, date);
+            String news_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam bibendum orci ligula, in imperdiet metus hendrerit a. Nunc maximus tortor eget orci mattis, eget convallis diam sagittis.";
+            populateNewsCards("Aqui vai o título da notícia", news_content, date);
+            populateNewsCards("O título da notícia vai aqui", news_content, date);
+
         }
     }
 
-    public void populateEmergencyCards(String content) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    public void populateEmergencyCards(String title, String content) {
         LinearLayout emergencyBody = new LinearLayout(getApplicationContext());
 
         CardView cardView = new CardView(getApplicationContext());
@@ -103,6 +126,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         );
         layoutParams.setMargins(15, 15, 15, 20);
 
+        LinearLayout.LayoutParams mainBody = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        mainBody.setMargins(0,0,0,50);
+
         emergencyBody.setLayoutParams(layoutParams);
 
         emergencyBody.setOrientation(LinearLayout.VERTICAL);
@@ -114,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cardView.setMaxCardElevation(30);
         cardView.setMaxCardElevation(6);
 
-        attention.setText("Atenção!");
+        attention.setText(title);
         attention.setTextColor(getResources().getColor(WHITE));
         attention.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         attention.setTextSize(26);
@@ -129,10 +158,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         emergencyBody.addView(reason);
 
         cardView.addView(emergencyBody);
+
+        this.mViewHolder.emergencyLayout.setLayoutParams(mainBody);
         this.mViewHolder.emergencyLayout.addView(cardView);
     }
 
-    public void populateAdviceCards(String content) {
+    public void populateAdviceCards(String title, String content) {
         LinearLayout emergencyBody = new LinearLayout(getApplicationContext());
 
         CardView cardView = new CardView(getApplicationContext());
@@ -146,6 +177,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         );
         layoutParams.setMargins(15, 15, 15, 20);
 
+        LinearLayout.LayoutParams mainBody = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        mainBody.setMargins(0,0,0,120);
+
         emergencyBody.setLayoutParams(layoutParams);
 
         emergencyBody.setOrientation(LinearLayout.VERTICAL);
@@ -157,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cardView.setMaxCardElevation(30);
         cardView.setMaxCardElevation(6);
 
-        attention.setText("Aviso!");
+        attention.setText(title);
         attention.setTextColor(getResources().getColor(BLACK));
         attention.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         attention.setTextSize(26);
@@ -172,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         emergencyBody.addView(reason);
 
         cardView.addView(emergencyBody);
+
+        this.mViewHolder.adviceLayout.setLayoutParams(mainBody);
         this.mViewHolder.adviceLayout.addView(cardView);
     }
 
@@ -189,6 +228,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ImageView newsThumbnail = new ImageView(getApplicationContext());
 
+        LinearLayout.LayoutParams mainBody = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        mainBody.setMargins(0,0,0,30);
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -210,11 +254,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         newsCardBody.setLayoutParams(layoutParams);
 
 
-
-        cardView.setLayoutParams(layoutParams);
+        cardView.setLayoutParams(mainBody);
 
         cardView.setRadius(15);
-        cardView.setBackgroundColor(getResources().getColor(newsCardColor));
+        cardView.setBackgroundResource(R.drawable.news_card_background);
         cardView.setMaxCardElevation(30);
         cardView.setMaxCardElevation(6);
 
@@ -230,14 +273,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         titleBar.setOrientation(LinearLayout.VERTICAL);
         titleBar.setLayoutParams(titleBarParams);
 
-        newsTitle.setPadding(10,0,10,0);
+        newsTitle.setPadding(10, 0, 10, 0);
         newsTitle.setText(title);
         newsTitle.setGravity(Gravity.START);
         newsTitle.setTextColor(getResources().getColor(WHITE));
         newsTitle.setTypeface(Typeface.DEFAULT_BOLD);
         newsTitle.setTextSize(22);
 
-        newsDate.setPadding(10,10,10,10);
+        newsDate.setPadding(10, 10, 10, 10);
         newsDate.setText(date);
         newsDate.setGravity(Gravity.END);
         newsDate.setTextColor(getResources().getColor(LIGHT_GREY));
@@ -246,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //NEWS CONTENT
         newsTextBody.setLayoutParams(layoutParams);
+        newsText.setPadding(10,10,10,10);
         newsTextBody.setBackgroundResource(R.drawable.news_content_background);
 
         newsText.setLayoutParams(layoutParams);
@@ -268,7 +312,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         newsCardBody.addView(newsTextBody);
         cardView.addView(newsCardBody);
 
-
         this.mViewHolder.newsLayout.addView(cardView);
     }
 
@@ -277,6 +320,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ImageButton gotoReport;
         ImageButton gotoSettings;
         ImageButton homeRefreshButton;
+
+        TextView inicioText;
 
         LinearLayout newsLayout;
 
