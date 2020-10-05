@@ -53,8 +53,8 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_icone_report" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_icone_home" />
 
         <ImageButton
             android:id="@+id/icon_news"
@@ -64,7 +64,7 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
 
         <ImageButton
@@ -75,7 +75,7 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
 
         <ImageButton
@@ -86,8 +86,8 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_selected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_icone_report" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_icone_settings" />
 
     </LinearLayout>
 
@@ -138,10 +138,12 @@
                 android:orientation="vertical">
 
                 <Switch
+                    android:id="@+id/switch_emergency"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
+                    android:checked="true"
                     android:padding="5dp"
                     android:text="@string/notificar_emerg_ncias"
                     android:textColor="#fff"
@@ -149,10 +151,12 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <Switch
+                    android:id="@+id/switch_warning"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
+                    android:checked="true"
                     android:padding="5dp"
                     android:text="@string/notificar_avisos"
                     android:textColor="#fff"
@@ -160,10 +164,12 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
                 <Switch
+                    android:id="@+id/switch_news"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
+                    android:checked="true"
                     android:padding="5dp"
                     android:text="@string/notificar_not_cias"
                     android:textColor="#fff"
@@ -172,7 +178,7 @@
             </LinearLayout>
 
             <EditText
-                android:id="@+id/settings_cep"
+                android:id="@+id/manual_cep"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/switches"
@@ -186,10 +192,10 @@
                 android:padding="5dp" />
 
             <Button
-                android:id="@+id/manual_cep"
+                android:id="@+id/add_manual_cep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/settings_cep"
+                android:layout_below="@id/manual_cep"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="25dp"
                 android:background="@drawable/button_background"
@@ -202,7 +208,7 @@
                 android:id="@+id/contact_buttons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/manual_cep"
+                android:layout_below="@id/add_manual_cep"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="50dp"
                 android:orientation="vertical">

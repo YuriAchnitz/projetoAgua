@@ -23,12 +23,20 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yach.projetoagua.R;
+import com.yach.projetoagua.data.Post;
+import com.yach.projetoagua.data.ProjetoAguaApi;
 
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.List;
 
 import cz.msebera.android.httpclient.entity.mime.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.yach.projetoagua.R.color.BLACK;
 import static com.yach.projetoagua.R.color.LIGHT_GREY;
@@ -45,11 +53,19 @@ import static com.yach.projetoagua.R.color.newsCardColor;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ViewHolder mViewHolder = new ViewHolder();
+    private ProjetoAguaApi projetoAguaApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://viniferr-watermonitor.herokuapp.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        projetoAguaApi = retrofit.create(ProjetoAguaApi.class);
 
         this.mViewHolder.gotoNews = findViewById(R.id.icon_news);
         this.mViewHolder.gotoReport = findViewById(R.id.icon_report);
@@ -90,6 +106,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (v.getId() == R.id.icon_home) {
+            mViewHolder.emergencyLayout.removeAllViews();
+            mViewHolder.adviceLayout.removeAllViews();
+            mViewHolder.newsLayout.removeAllViews();
+
+            getEmergency("all", "all");
+            getWarning("all", "all");
+            getNews("all", "all");
+            /*
+            Intent intent = new Intent(getApplicationContext(), JsonTesterActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            */
+
+            /*
             String emergency_title = "Atenção!";
             String emergency_content = "Falta de água iminente";
             populateEmergencyCards(emergency_title, emergency_content);
@@ -102,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String news_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam bibendum orci ligula, in imperdiet metus hendrerit a. Nunc maximus tortor eget orci mattis, eget convallis diam sagittis.";
             populateNewsCards("Aqui vai o título da notícia", news_content, date);
             populateNewsCards("O título da notícia vai aqui", news_content, date);
+            */
 
         }
     }
@@ -109,7 +140,140 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        mViewHolder.emergencyLayout.removeAllViews();
+        mViewHolder.adviceLayout.removeAllViews();
+        mViewHolder.newsLayout.removeAllViews();
 
+        getEmergency("all", "all");
+        getWarning("all", "all");
+        getNews("all", "all");
+    }
+
+    public void getNews(String cep, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+
+        call.enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if (!response.isSuccessful()) {
+                    Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                            "Code: " + response.code(),
+                            Toast.LENGTH_SHORT);
+                    toastNotSuccessful.show();
+                    return;
+                }
+
+                List<Post> posts = response.body();
+
+                int cont = 0;
+                for (Post post : posts) {
+                    if (post.getType().equals("news")) {
+                        if (cont == 3) {
+                            return;
+                        }
+                        String title = post.getTitle();
+                        String content = post.getText();
+                        String date = post.getDate();
+
+                        String showDate;
+                        String year, month, day;
+
+                        year = date.substring(0, 4);
+                        month = date.substring(5, 7);
+                        day = date.substring(8, 10);
+
+                        showDate = (day + "/" + month + "/" + year);
+
+                        populateNewsCards(title, content, showDate);
+                        cont++;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Toast toastFailure = Toast.makeText(getApplicationContext(),
+                        t.getMessage(),
+                        Toast.LENGTH_SHORT);
+                toastFailure.show();
+            }
+        });
+    }
+
+    public void getEmergency(String cep, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+
+        call.enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if (!response.isSuccessful()) {
+                    Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                            "Code: " + response.code(),
+                            Toast.LENGTH_SHORT);
+                    toastNotSuccessful.show();
+                    return;
+                }
+
+                List<Post> posts = response.body();
+
+                for (Post post : posts) {
+                    if (post.getType().equals("emergency")) {
+                        String title = post.getTitle();
+                        String content = post.getText();
+
+                        populateEmergencyCards(title, content);
+
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Toast toastFailure = Toast.makeText(getApplicationContext(),
+                        t.getMessage(),
+                        Toast.LENGTH_SHORT);
+                toastFailure.show();
+            }
+        });
+    }
+
+    public void getWarning(String cep, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+
+        call.enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if (!response.isSuccessful()) {
+                    Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                            "Code: " + response.code(),
+                            Toast.LENGTH_SHORT);
+                    toastNotSuccessful.show();
+                    return;
+                }
+
+                List<Post> posts = response.body();
+
+                for (Post post : posts) {
+                    if (post.getType().equals("warning")) {
+                        String title = post.getTitle();
+                        String content = post.getText();
+
+                        populateAdviceCards(title, content);
+
+                        return;
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Toast toastFailure = Toast.makeText(getApplicationContext(),
+                        t.getMessage(),
+                        Toast.LENGTH_SHORT);
+                toastFailure.show();
+            }
+        });
     }
 
     public void populateEmergencyCards(String title, String content) {
@@ -130,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        mainBody.setMargins(0,0,0,50);
+        mainBody.setMargins(0, 0, 0, 50);
 
         emergencyBody.setLayoutParams(layoutParams);
 
@@ -181,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        mainBody.setMargins(0,0,0,120);
+        mainBody.setMargins(0, 0, 0, 120);
 
         emergencyBody.setLayoutParams(layoutParams);
 
@@ -232,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        mainBody.setMargins(0,0,0,30);
+        mainBody.setMargins(0, 0, 0, 30);
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -289,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //NEWS CONTENT
         newsTextBody.setLayoutParams(layoutParams);
-        newsText.setPadding(10,10,10,10);
+        newsText.setPadding(10, 10, 10, 10);
         newsTextBody.setBackgroundResource(R.drawable.news_content_background);
 
         newsText.setLayoutParams(layoutParams);
@@ -320,8 +484,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ImageButton gotoReport;
         ImageButton gotoSettings;
         ImageButton homeRefreshButton;
-
-        TextView inicioText;
 
         LinearLayout newsLayout;
 

@@ -51,8 +51,8 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_selected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_icone_report" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_icone_home" />
 
         <ImageButton
             android:id="@+id/icon_news"
@@ -62,7 +62,7 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
 
         <ImageButton
@@ -73,7 +73,7 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
 
         <ImageButton
@@ -84,8 +84,8 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_icone_report" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_icone_settings" />
 
     </LinearLayout>
 

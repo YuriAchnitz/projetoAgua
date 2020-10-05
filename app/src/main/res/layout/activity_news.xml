@@ -52,8 +52,8 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_icone_report" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_icone_home" />
 
         <ImageButton
             android:id="@+id/icon_news"
@@ -63,7 +63,7 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_selected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
 
         <ImageButton
@@ -74,7 +74,7 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
 
         <ImageButton
@@ -85,8 +85,8 @@
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
             android:paddingHorizontal="5dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_icone_report" />
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_icone_settings" />
 
     </LinearLayout>
 
@@ -144,53 +144,55 @@
 
             <LinearLayout
                 android:id="@+id/date_and_button"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/insert_cep"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="15dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingHorizontal="5dp"
+                android:paddingBottom="10dp">
 
 
                 <Button
                     android:id="@+id/select_date"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="30dp"
                     android:layout_weight="1"
                     android:background="@drawable/button_background"
                     android:gravity="center"
                     android:text="@string/selecione_a_data"
                     android:textAlignment="center"
                     android:textColor="#fff"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:ignore="RtlHardcoded" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
 
                 <ImageButton
                     android:id="@+id/refresh_button"
                     android:layout_width="5dp"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="30dp"
                     android:layout_weight="1"
                     android:background="@drawable/button_background"
                     android:contentDescription="@string/botao_de_atualizar"
                     android:padding="10dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_refresh_icon" />
+                    android:src="@drawable/ic_refresh_icon"
+                    tools:ignore="RtlHardcoded" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/news_simple_cards"
-                android:layout_below="@id/date_and_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/date_and_button"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
                 android:orientation="vertical"
-                android:padding="10dp"
-                android:layout_marginBottom="10dp"/>
+                android:padding="10dp" />
 
         </RelativeLayout>
 

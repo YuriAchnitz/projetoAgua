@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Aqua Nova</string>
+    <string name="app_name">AquaNova</string>
     <string name="insira_seu_cep">Insira seu CEP</string>
     <string name="data">Data</string>
     <string name="projeto_gua">Projeto Água</string>
-    <string name="selecione_a_data">selecione a data</string>
+    <string name="selecione_a_data">selecione uma data</string>
     <string name="report_description">Aqui você poder denunciar um incidente diretamente ao SAAE</string>
     <string name="cep">CEP</string>
     <string name="nome_opcional">Nome (opcional)</string>
