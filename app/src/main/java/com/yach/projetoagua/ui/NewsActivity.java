@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.LayoutDirection;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -94,15 +95,15 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
             toastFailure.show();
         } else if (cep.length() == 0) {
             if (date.equals("")) {
-                getNews("all", "all");
+                getNews("all", "news", "all");
             } else {
-                getNews("all", date);
+                getNews("all", "news", date);
             }
         } else if (cep.length() == 8) {
             if (date.equals("")) {
-                getNews(cep, "all");
+                getNews(cep, "news", "all");
             } else {
-                getNews(cep, date);
+                getNews(cep, "news", date);
             }
         }
     }
@@ -152,15 +153,15 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
                 toastFailure.show();
             } else if (cep.length() == 0) {
                 if (date.equals("")) {
-                    getNews("all", "all");
+                    getNews("all", "news", "all");
                 } else {
-                    getNews("all", date);
+                    getNews("all", "news", date);
                 }
             } else if (cep.length() == 8) {
                 if (date.equals("")) {
-                    getNews(cep, "all");
+                    getNews(cep, "news", "all");
                 } else {
-                    getNews(cep, date);
+                    getNews(cep, "news", date);
                 }
             }
         }
@@ -168,35 +169,36 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.icon_home) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_report) {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_news) {
             mViewHolder.newsCards.removeAllViews();
             mViewHolder.selectDate.setText(R.string.selecione_a_data);
             mViewHolder.insertCep.setText("");
-            date="";
-            getNews("all", "all");
+            date = "";
+            getNews("all", "news", "all");
             /*
             String news_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam bibendum orci ligula, in imperdiet metus hendrerit a. Nunc maximus tortor eget orci mattis, eget convallis diam sagittis.";
             populateNewsCards("Título da notícia", news_content, "28/09/2020");
             */
         }
+
     }
 
     public void populateNewsCards(String title, String news_content, String date) {
@@ -270,8 +272,8 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         this.mViewHolder.newsCards.addView(cardView);
     }
 
-    public void getNews(String cep, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+    public void getNews(String cep, String type, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
             @Override
@@ -295,9 +297,9 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
                         String showDate;
                         String year, month, day;
 
-                        year = date.substring(0,4);
-                        month = date.substring(5,7);
-                        day = date.substring(8,10);
+                        year = date.substring(0, 4);
+                        month = date.substring(5, 7);
+                        day = date.substring(8, 10);
 
                         showDate = (day + "/" + month + "/" + year);
 
@@ -316,7 +318,6 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         });
 
     }
-
 
     private static class ViewHolder {
         EditText insertCep;

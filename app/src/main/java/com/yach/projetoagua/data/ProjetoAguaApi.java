@@ -17,6 +17,6 @@ public interface ProjetoAguaApi {
     @GET("updatetl/all/{date}")
     Call<List<Post>> getAllCep(@Path("date") String date);
 
-    @GET("updatetl/{cep}/{date}")
-    Call<List<Post>> getAllCustom(@Path("cep") String cep, @Path("date") String date);
+    @GET("updatetl/{cep}/{type}/{date}")
+    Call<List<Post>> getAllCustom(@Path("cep") String cep, @Path("type") String type, @Path("date") String date);
 }

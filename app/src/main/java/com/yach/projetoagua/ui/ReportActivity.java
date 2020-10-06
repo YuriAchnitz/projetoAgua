@@ -10,15 +10,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.yach.projetoagua.R;
+import com.yach.projetoagua.data.UserData;
+import com.yach.projetoagua.data.UserPreferences;
 
-public class ReportActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener{
+import java.util.UUID;
+
+public class ReportActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
     private ViewHolder mViewHolder = new ViewHolder();
+    private UserPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+        this.mSharedPreferences = new UserPreferences(this);
 
         this.mViewHolder.gotoHome = findViewById(R.id.icon_home);
         this.mViewHolder.gotoNews = findViewById(R.id.icon_news);
@@ -29,7 +35,6 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
         this.mViewHolder.gotoHome.setOnClickListener(this);
         this.mViewHolder.gotoNews.setOnClickListener(this);
         this.mViewHolder.gotoSettings.setOnClickListener(this);
-
     }
 
     @Override
@@ -37,38 +42,37 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
         if (v.getId() == R.id.icon_home) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_news) {
             Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
     }
 
 
-
     @Override
     public boolean onTouch(View view, MotionEvent event) {
-            if (view.getId() == R.id.report_description) {
-                view.getParent().requestDisallowInterceptTouchEvent(true);
-                switch (event.getAction()&MotionEvent.ACTION_MASK){
-                    case MotionEvent.ACTION_UP:
-                        view.getParent().requestDisallowInterceptTouchEvent(false);
-                        break;
-                }
+        if (view.getId() == R.id.report_description) {
+            view.getParent().requestDisallowInterceptTouchEvent(true);
+            switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_UP:
+                    view.getParent().requestDisallowInterceptTouchEvent(false);
+                    break;
             }
-            return false;
+        }
+        return false;
     }
 
     private static class ViewHolder {

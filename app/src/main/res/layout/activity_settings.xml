@@ -17,10 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/title_background"
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingVertical="5dp">
 
         <ImageView
             android:layout_width="306dp"
@@ -119,8 +119,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/item_container"
-        android:padding="10dp">
+        android:background="@drawable/item_container">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -141,6 +140,8 @@
                     android:id="@+id/switch_emergency"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:checked="true"
@@ -154,6 +155,7 @@
                     android:id="@+id/switch_warning"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:checked="true"
@@ -167,6 +169,7 @@
                     android:id="@+id/switch_news"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:checked="true"
@@ -183,6 +186,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/switches"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="10dp"
                 android:autofillHints="postal_code"
                 android:background="@drawable/edittext_background"
@@ -197,6 +201,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/manual_cep"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="25dp"
                 android:background="@drawable/button_background"
                 android:padding="10dp"
@@ -227,6 +232,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:padding="10dp"
@@ -236,6 +242,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:padding="10dp"
@@ -245,6 +252,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:padding="10dp"
@@ -254,6 +262,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/button_background"
                     android:padding="10dp"
@@ -267,6 +276,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/contact_buttons"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/button_background"
                 android:padding="10dp"

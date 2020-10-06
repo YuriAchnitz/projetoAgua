@@ -25,11 +25,14 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yach.projetoagua.R;
 import com.yach.projetoagua.data.Post;
 import com.yach.projetoagua.data.ProjetoAguaApi;
+import com.yach.projetoagua.data.UserData;
+import com.yach.projetoagua.data.UserPreferences;
 
 import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import cz.msebera.android.httpclient.entity.mime.Header;
 import retrofit2.Call;
@@ -52,6 +55,7 @@ import static com.yach.projetoagua.R.color.newsCardColor;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private UserPreferences mSharedPreferences;
     private ViewHolder mViewHolder = new ViewHolder();
     private ProjetoAguaApi projetoAguaApi;
 
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.mSharedPreferences = new UserPreferences(this);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://viniferr-watermonitor.herokuapp.com/")
@@ -77,9 +82,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.mViewHolder.gotoSettings.setOnClickListener(this);
         this.mViewHolder.homeRefreshButton.setOnClickListener(this);
 
+
+        this.mViewHolder.errorButton = findViewById(R.id.error_button);
+        this.mViewHolder.errorButton.setOnClickListener(this);
+
+
         this.mViewHolder.newsLayout = findViewById(R.id.card_news_layout);
         this.mViewHolder.emergencyLayout = findViewById(R.id.card_emergency_layout);
         this.mViewHolder.adviceLayout = findViewById(R.id.card_advice_layout);
+
+        cepMessage();
+
+        userId();
+
+        /*
+        Toast toast = Toast.makeText(getApplicationContext(),
+                mSharedPreferences.getStorageString(UserData.USER_ID),
+                Toast.LENGTH_SHORT);
+        toast.show();
+        */
+    }
+
+    private void cepMessage() {
+        if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).equals("")) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Adicione seu CEP na tela de configurações para receber avisos",
+                    Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
+    private void userId() {
+        if (mSharedPreferences.getStorageString(UserData.USER_ID).equals("")) {
+            String UserId1 = UUID.randomUUID().toString().substring(0, 9);
+            String UserId2 = UUID.randomUUID().toString().substring(0, 8);
+            String UserId = UserId1 + UserId2;
+            mSharedPreferences.storeString(UserData.USER_ID, UserId);
+        }
     }
 
     @Override
@@ -87,22 +126,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.icon_news) {
             Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_report) {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_settings) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_home) {
@@ -110,16 +149,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mViewHolder.adviceLayout.removeAllViews();
             mViewHolder.newsLayout.removeAllViews();
 
-            getEmergency("all", "all");
-            getWarning("all", "all");
-            getNews("all", "all");
+            if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
+                getEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
+                getWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
+            }
+            getNews("all", "news", "all");
+
             /*
             Intent intent = new Intent(getApplicationContext(), JsonTesterActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-            */
 
-            /*
+
             String emergency_title = "Atenção!";
             String emergency_content = "Falta de água iminente";
             populateEmergencyCards(emergency_title, emergency_content);
@@ -133,7 +174,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             populateNewsCards("Aqui vai o título da notícia", news_content, date);
             populateNewsCards("O título da notícia vai aqui", news_content, date);
             */
+        }
 
+        if (v.getId() == R.id.error_button) {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            layoutParams.height = 0;
+            layoutParams.width = 0;
+
+            mViewHolder.errorButton.setLayoutParams(layoutParams);
+
+            mViewHolder.emergencyLayout.removeAllViews();
+            mViewHolder.adviceLayout.removeAllViews();
+            mViewHolder.newsLayout.removeAllViews();
+
+            if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
+                getEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
+                getWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
+            }
+            getNews("all", "news", "all");
         }
     }
 
@@ -144,24 +205,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewHolder.adviceLayout.removeAllViews();
         mViewHolder.newsLayout.removeAllViews();
 
-        getEmergency("all", "all");
-        getWarning("all", "all");
-        getNews("all", "all");
+        if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
+            getEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
+            getWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
+        }
+        getNews("all", "news", "all");
     }
 
-    public void getNews(String cep, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+    public void getNews(String cep, String type, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if (!response.isSuccessful()) {
                     Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Code: " + response.code(),
+                            "Código: " + response.code(),
                             Toast.LENGTH_SHORT);
                     toastNotSuccessful.show();
+
+                    callErrorButton();
+
                     return;
                 }
+
+                mViewHolder.newsLayout.removeAllViews();
 
                 List<Post> posts = response.body();
 
@@ -196,23 +264,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         t.getMessage(),
                         Toast.LENGTH_SHORT);
                 toastFailure.show();
+
+                callErrorButton();
             }
         });
     }
 
-    public void getEmergency(String cep, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+    public void getEmergency(String cep, String type, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if (!response.isSuccessful()) {
-                    Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Code: " + response.code(),
+                    /*Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                            "Código: " + response.code(),
                             Toast.LENGTH_SHORT);
-                    toastNotSuccessful.show();
+                    toastNotSuccessful.show();*/
+
                     return;
                 }
+
+                mViewHolder.emergencyLayout.removeAllViews();
 
                 List<Post> posts = response.body();
 
@@ -234,23 +307,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         t.getMessage(),
                         Toast.LENGTH_SHORT);
                 toastFailure.show();
+
+                callErrorButton();
             }
         });
     }
 
-    public void getWarning(String cep, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, date);
+    public void getWarning(String cep, String type, String date) {
+        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if (!response.isSuccessful()) {
-                    Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Code: " + response.code(),
+                    /*Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                            "Código: " + response.code(),
                             Toast.LENGTH_SHORT);
-                    toastNotSuccessful.show();
+                    toastNotSuccessful.show();*/
+
                     return;
                 }
+
+                mViewHolder.adviceLayout.removeAllViews();
 
                 List<Post> posts = response.body();
 
@@ -272,8 +350,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         t.getMessage(),
                         Toast.LENGTH_SHORT);
                 toastFailure.show();
+
+                callErrorButton();
             }
         });
+    }
+
+    public void callErrorButton() {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        layoutParams.weight = 1.0f;
+        layoutParams.gravity = Gravity.CENTER;
+
+        mViewHolder.errorButton.setLayoutParams(layoutParams);
     }
 
     public void populateEmergencyCards(String title, String content) {
@@ -310,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         attention.setText(title);
         attention.setTextColor(getResources().getColor(WHITE));
         attention.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        attention.setTextSize(26);
+        attention.setTextSize(22);
         attention.setTypeface(Typeface.DEFAULT_BOLD);
 
         reason.setText(content);
@@ -361,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         attention.setText(title);
         attention.setTextColor(getResources().getColor(BLACK));
         attention.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        attention.setTextSize(26);
+        attention.setTextSize(22);
         attention.setTypeface(Typeface.DEFAULT_BOLD);
 
         reason.setText(content);
@@ -484,6 +575,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ImageButton gotoReport;
         ImageButton gotoSettings;
         ImageButton homeRefreshButton;
+
+        Button errorButton;
 
         LinearLayout newsLayout;
 

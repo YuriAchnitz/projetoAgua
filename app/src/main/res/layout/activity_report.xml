@@ -17,10 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/title_background"
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingVertical="5dp">
 
         <ImageView
             android:layout_width="306dp"
@@ -123,8 +123,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/item_container"
-        android:nestedScrollingEnabled="true"
-        android:padding="10dp">
+        android:nestedScrollingEnabled="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -135,6 +134,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="15dp"
                 android:autofillHints="name"
                 android:background="@drawable/edittext_background"
@@ -151,8 +152,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/report_name"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="15dp"
-                android:autofillHints="postal_code"
+                android:autofillHints="postal-code"
                 android:background="@drawable/edittext_background"
                 android:hint="@string/cep"
                 android:inputType="number"
@@ -165,6 +167,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/report_cep"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="15dp"
                 android:autofillHints="null"
                 android:background="@drawable/edittext_background"
@@ -181,11 +184,13 @@
 
             <LinearLayout
                 android:id="@+id/attachment_bar"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/report_description"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="60dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginBottom="50dp"
+                android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
                 <TextView
@@ -193,7 +198,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edittext_background"
-                    android:padding="5dp"
+                    android:padding="7dp"
                     android:text="@string/anexos_opcional"
                     android:textSize="18sp" />
 
@@ -222,6 +227,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/attachment_bar"
                 android:layout_centerHorizontal="true"
+                android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/button_background"
                 android:text="@string/enviar"

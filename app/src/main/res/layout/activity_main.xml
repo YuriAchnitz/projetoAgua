@@ -15,10 +15,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/title_background"
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingVertical="5dp">
 
         <ImageView
             android:layout_width="306dp"
@@ -127,8 +127,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="10dp">
+
+            <Button
+                android:id="@+id/error_button"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/button_background"
+                android:padding="10dp"
+                android:text="@string/tentar_novamente"
+                android:textColor="@color/WHITE" />
 
             <LinearLayout
                 android:id="@+id/card_emergency_layout"

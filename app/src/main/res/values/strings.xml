@@ -10,7 +10,7 @@
     <string name="descricao">Descrição</string>
     <string name="enviar">Enviar</string>
     <string name="anexos_opcional">Anexos (opcional)</string>
-    <string name="localizacao_manual">Localização manual</string>
+    <string name="localizacao_manual">Adicionar localização manual</string>
     <string name="reportar_erro">Reportar Erro</string>
     <string name="whatsapp_do_saae">Whatsapp do SAAE</string>
     <string name="site_do_saae">Site do SAAE</string>
@@ -24,4 +24,5 @@
     <string name="in_cio">Início</string>
     <string name="aqua_nova">Aqua Nova</string>
     <string name="botao_de_atualizar">Botão de atualizar</string>
+    <string name="tentar_novamente">Tentar novamente</string>
 </resources>

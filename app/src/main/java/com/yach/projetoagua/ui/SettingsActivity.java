@@ -68,26 +68,33 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        mViewHolder.manualCep.setText(mSharedPreferences.getStorageString(UserData.MANUAL_CEP));
+    }
+
+    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.icon_home) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_news) {
             Intent intent = new Intent(getApplicationContext(), NewsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.icon_report) {
             Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
             startActivity(intent);
+            finish();
         }
 
         if (v.getId() == R.id.switch_emergency) {
@@ -114,8 +121,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
         }
 
-        if(v.getId() == R.id.add_manual_cep) {
-            if(mViewHolder.manualCep.length() == 8) {
+        if (v.getId() == R.id.add_manual_cep) {
+            if (mViewHolder.manualCep.length() == 8 || mViewHolder.manualCep.length() == 0) {
                 this.mSharedPreferences.storeString(UserData.MANUAL_CEP, mViewHolder.manualCep.getText().toString());
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "CEP adicionado",
@@ -127,6 +134,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                         Toast.LENGTH_SHORT);
                 toastFailure.show();
             }
+
+            //mViewHolder.manualCep.setText(mSharedPreferences.getStorageString(UserData.MANUAL_CEP));
         }
     }
 

@@ -6,8 +6,9 @@ public class UserData {
     public static String WARNING_SWITCH = "warningSwitch";
     public static String NEWS_SWITCH = "newsSwitch";
 
-    public static String ADD_MANUAL_CEP = "add_manualCep";
-    public static String MANUAL_CEP = "";
+    public static String MANUAL_CEP = "manualCep";
+
+    public static String USER_ID = "userId";
 
     public static String TRUE = "true";
     public static String FALSE = "false";
