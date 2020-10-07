@@ -3,52 +3,65 @@ package com.yach.projetoagua.data;
 import com.google.gson.annotations.SerializedName;
 
 public class Post {
-    @SerializedName("tl_id")
-    private int id;
+    private int tl_id;
 
-    @SerializedName("tl_name")
+    private String tl_name;
+
+    private String tl_type;
+
+    private String tl_title;
+
+    private String tl_text;
+
+    private String tl_location;
+
+    private String tl_date;
+
+
+    private String user;
+
     private String name;
 
-    @SerializedName("tl_type")
-    private String type;
-
-    @SerializedName("tl_title")
-    private String title;
-
-    @SerializedName("tl_text")
-    private String text;
-
-    @SerializedName("tl_location")
     private String location;
 
-    @SerializedName("tl_date")
+    private String desc;
+
     private String date;
 
+    public Post(String user, String name, String location, String desc, String date) {
+        this.user = user;
+        this.name = name;
+        this.location = location;
+        this.desc = desc;
+        this.date = date;
+    }
+
+
     public int getId() {
-        return id;
+        return tl_id;
     }
 
     public String getName() {
-        return name;
+        return tl_name;
     }
 
     public String getType() {
-        return type;
+        return tl_type;
     }
 
     public String getTitle() {
-        return title;
+        return tl_title;
     }
 
     public String getText() {
-        return text;
+        return tl_text;
     }
 
     public String getLocation() {
-        return location;
+        return tl_location;
     }
 
     public String getDate() {
-        return date;
+        return tl_date;
     }
 }

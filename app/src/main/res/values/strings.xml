@@ -25,4 +25,10 @@
     <string name="aqua_nova">Aqua Nova</string>
     <string name="botao_de_atualizar">Botão de atualizar</string>
     <string name="tentar_novamente">Tentar novamente</string>
+    <string name="noticias">Notícias</string>
+    <string name="botao_configuracoes">Botão para ir às configurações</string>
+    <string name="botao_denuncias">Botão para ir às denúncias</string>
+    <string name="botao_noticias">Botão para ir às notícias</string>
+    <string name="botao_recarregar_tela">Botão para recarregar a tela</string>
+    <string name="botao_inicio">Botão para ir à tela de início</string>
 </resources>

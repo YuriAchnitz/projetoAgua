@@ -51,6 +51,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
+            android:contentDescription="@string/botao_inicio"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_home" />
@@ -62,6 +63,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_selected"
+            android:contentDescription="@string/botao_recarregar_tela"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
@@ -73,6 +75,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
+            android:contentDescription="@string/botao_denuncias"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
@@ -84,6 +87,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
+            android:contentDescription="@string/botao_configuracoes"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_settings" />
@@ -104,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity=""
-            android:text="Notícias"
+            android:text="@string/noticias"
             android:textAlignment="center"
             android:textColor="#fff"
             android:textSize="28sp"

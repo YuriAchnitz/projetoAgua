@@ -52,6 +52,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
+            android:contentDescription="@string/botao_inicio"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_home" />
@@ -63,6 +64,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
+            android:contentDescription="@string/botao_noticias"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
@@ -74,6 +76,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_selected"
+            android:contentDescription="@string/botao_denuncias"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_report" />
@@ -85,6 +88,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_weight="1"
             android:background="@drawable/main_button_unselected"
+            android:contentDescription="@string/botao_configuracoes"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_icone_settings" />
@@ -206,23 +210,27 @@
                     android:id="@+id/add_file"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="15dp" />
+                    android:layout_marginLeft="15dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <ImageButton
                     android:id="@+id/add_camera"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="15dp" />
+                    android:layout_marginLeft="15dp"
+                    tools:ignore="RtlHardcoded" />
 
                 <ImageButton
                     android:id="@+id/add_help"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="15dp" />
+                    android:layout_marginLeft="15dp"
+                    tools:ignore="RtlHardcoded" />
 
             </LinearLayout>
 
             <Button
+                android:id="@+id/post_report"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/attachment_bar"
