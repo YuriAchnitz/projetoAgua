@@ -2,8 +2,8 @@ package com.yach.projetoagua.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -147,8 +147,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         EditText manualCep;
         Button addManualCep;
 
+        @SuppressLint("UseSwitchCompatOrMaterialCode")
         Switch switchEmergency;
+        @SuppressLint("UseSwitchCompatOrMaterialCode")
         Switch switchWarning;
+        @SuppressLint("UseSwitchCompatOrMaterialCode")
         Switch switchNews;
     }
 }

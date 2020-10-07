@@ -3,13 +3,9 @@ package com.yach.projetoagua.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -20,21 +16,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yach.projetoagua.R;
 import com.yach.projetoagua.data.Post;
 import com.yach.projetoagua.data.ProjetoAguaApi;
 import com.yach.projetoagua.data.UserData;
 import com.yach.projetoagua.data.UserPreferences;
 
-import org.json.JSONObject;
-
-import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import cz.msebera.android.httpclient.entity.mime.Header;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,13 +36,10 @@ import static com.yach.projetoagua.R.color.LIGHT_GREY;
 import static com.yach.projetoagua.R.color.RED;
 import static com.yach.projetoagua.R.color.WHITE;
 import static com.yach.projetoagua.R.color.YELLOW;
-import static com.yach.projetoagua.R.color.buttonColor;
-import static com.yach.projetoagua.R.color.colorDiv;
-import static com.yach.projetoagua.R.color.colorPrimaryDark;
 import static com.yach.projetoagua.R.color.newsCardBodyColor;
-import static com.yach.projetoagua.R.color.newsCardColor;
 
 
+@SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private UserPreferences mSharedPreferences;

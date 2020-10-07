@@ -2,10 +2,8 @@ package com.yach.projetoagua.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,6 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+@SuppressWarnings("ALL")
 public class ReportActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ProjetoAguaApi projetoAguaApi;
