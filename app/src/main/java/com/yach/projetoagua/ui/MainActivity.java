@@ -1,11 +1,13 @@
 package com.yach.projetoagua.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +18,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.yach.projetoagua.R;
 import com.yach.projetoagua.data.Post;
 import com.yach.projetoagua.data.ProjetoAguaApi;
 import com.yach.projetoagua.data.UserData;
 import com.yach.projetoagua.data.UserPreferences;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,12 +54,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private UserPreferences mSharedPreferences;
     private ViewHolder mViewHolder = new ViewHolder();
     private ProjetoAguaApi projetoAguaApi;
+    String dateOfToday;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.mSharedPreferences = new UserPreferences(this);
+
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        dateOfToday = sdf.format(c.getTime());
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://viniferr-watermonitor.herokuapp.com/")
@@ -137,17 +153,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mViewHolder.newsLayout.removeAllViews();
 
             if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
-                getEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
-                getWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
+                getEmergency();
+                getWarning();
+                //getOldEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
+                //getOldWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
             }
-            getNews("all", "news", "all");
+            getNews();
+            //getOldNews("all", "news", "all");
 
             /*
             Intent intent = new Intent(getApplicationContext(), JsonTesterActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
 
-
+            /*
             String emergency_title = "Atenção!";
             String emergency_content = "Falta de água iminente";
             populateEmergencyCards(emergency_title, emergency_content);
@@ -178,10 +197,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mViewHolder.newsLayout.removeAllViews();
 
             if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
-                getEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
-                getWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
+                getEmergency();
+                getWarning();
+                //getOldEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
+                //getOldWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
             }
-            getNews("all", "news", "all");
+            getNews();
+            //getOldNews("all", "news", "all");
         }
     }
 
@@ -193,13 +215,119 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewHolder.newsLayout.removeAllViews();
 
         if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
-            getEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
-            getWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
+            getEmergency();
+            getWarning();
+            //getOldEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
+            //getOldWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
         }
-        getNews("all", "news", "all");
+        getNews();
+        //getOldNews("all", "news", "all");
     }
 
-    public void getNews(String cep, String type, String date) {
+    private void getNews() {
+        db.collection("news")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                //String location = document.getString("location");
+                                String date = document.getString("date");
+                                //String exp_date = document.getString("exp_date");
+                                //String ext_link = document.getString("ext_link");
+
+                                String showDate;
+                                String year, month, day;
+
+                                year = date.substring(0, 4);
+                                month = date.substring(5, 7);
+                                day = date.substring(8, 10);
+
+                                showDate = (day + "/" + month + "/" + year);
+
+                                populateNewsCards(title, text, showDate);
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nas notícias",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+
+                            callErrorButton();
+                        }
+                    }
+                });
+    }
+
+    public void getEmergency() {
+        db.collection("emergency")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String content = "EMERGENCY\n";
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                String location = document.getString("location");
+                                String date = document.getString("date");
+                                String exp_date = document.getString("exp_date");
+                                String ext_link = document.getString("ext_link");
+
+                                if (dateOfToday.compareTo(date) >= 0) {
+                                    if (dateOfToday.compareTo(exp_date) < 0) {
+                                        populateEmergencyCards(title, text);
+                                    }
+                                }
+
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nas emergências",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+                        }
+                    }
+                });
+    }
+
+    public void getWarning() {
+        db.collection("warnings")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                String location = document.getString("location");
+                                String date = document.getString("date");
+                                String exp_date = document.getString("exp_date");
+                                String ext_link = document.getString("ext_link");
+
+                                if (dateOfToday.compareTo(date) >= 0) {
+                                    if (dateOfToday.compareTo(exp_date) < 0) {
+                                        populateWarningCards(title, text);
+                                    }
+                                }
+
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nos avisos",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+                        }
+                    }
+                });
+    }
+
+    public void getOldNews(String cep, String type, String date) {
         Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
@@ -257,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    public void getEmergency(String cep, String type, String date) {
+    public void getOldEmergency(String cep, String type, String date) {
         Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
@@ -300,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    public void getWarning(String cep, String type, String date) {
+    public void getOldWarning(String cep, String type, String date) {
         Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
 
         call.enqueue(new Callback<List<Post>>() {
@@ -324,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         String title = post.getTitle();
                         String content = post.getText();
 
-                        populateAdviceCards(title, content);
+                        populateWarningCards(title, content);
 
                         return;
                     }
@@ -405,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.mViewHolder.emergencyLayout.addView(cardView);
     }
 
-    public void populateAdviceCards(String title, String content) {
+    public void populateWarningCards(String title, String content) {
         LinearLayout emergencyBody = new LinearLayout(getApplicationContext());
 
         CardView cardView = new CardView(getApplicationContext());

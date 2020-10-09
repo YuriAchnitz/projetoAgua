@@ -1,15 +1,21 @@
 package com.yach.projetoagua.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yach.projetoagua.R;
 import com.yach.projetoagua.data.Post;
 import com.yach.projetoagua.data.ProjetoAguaApi;
@@ -19,7 +25,9 @@ import com.yach.projetoagua.data.UserPreferences;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +41,7 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
     private ProjetoAguaApi projetoAguaApi;
     private ViewHolder mViewHolder = new ViewHolder();
     private UserPreferences mSharedPreferences;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +98,8 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         if (v.getId() == R.id.post_report) {
+
+
             String user = mSharedPreferences.getStorageString(UserData.USER_ID);
             String name = mViewHolder.reportName.getText().toString();
             String location = mViewHolder.reportCep.getText().toString();
@@ -120,12 +131,48 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
 
             } else {
                 postReport(user, name, location, desc, date);
+                //postOldReport(user, name, location, desc, date);
             }
+
 
         }
     }
 
-    private void postReport(String user, String name, String location, String desc, String date) {
+    private void postReport(String userId, String name, String location, String desc, String date) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("id", userId);
+        user.put("name", name);
+        user.put("desc", desc);
+        user.put("location", location);
+        user.put("date", date);
+
+        db.collection("reports")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast toastSuccessful = Toast.makeText(getApplicationContext(),
+                                "Sua denúncia foi enviada com sucesso",
+                                Toast.LENGTH_SHORT);
+                        toastSuccessful.show();
+
+                        mViewHolder.reportName.setText("");
+                        mViewHolder.reportCep.setText("");
+                        mViewHolder.reportDescription.setText("");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                                "Houve um problema",
+                                Toast.LENGTH_SHORT);
+                        toastNotSuccessful.show();
+                    }
+                });
+    }
+
+    private void postOldReport(String user, String name, String location, String desc, String date) {
         Post post = new Post(user, name, location, desc, date);
 
         Call<Post> call = projetoAguaApi.createPost(post);

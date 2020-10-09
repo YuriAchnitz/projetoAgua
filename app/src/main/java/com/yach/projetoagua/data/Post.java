@@ -3,6 +3,24 @@ package com.yach.projetoagua.data;
 import com.google.gson.annotations.SerializedName;
 
 public class Post {
+    private String bairro;
+
+    private String localidade;
+
+    private Boolean erro;
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public String getLocalidade() {
+        return localidade;
+    }
+
+    public Boolean getErro() {
+        return erro;
+    }
+
     private int tl_id;
 
     private String tl_name;
