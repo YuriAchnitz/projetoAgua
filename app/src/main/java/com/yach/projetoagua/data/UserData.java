@@ -7,6 +7,7 @@ public class UserData {
     public static String NEWS_SWITCH = "newsSwitch";
 
     public static String MANUAL_CEP = "manualCep";
+    public static String MANUAL_CEP_NUM = "manualCepNum";
 
     public static String USER_ID = "userId";
 

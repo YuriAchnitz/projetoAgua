@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "81761951873",
+    "firebase_url": "https://pythontest-64ae2.firebaseio.com",
+    "project_id": "pythontest-64ae2",
+    "storage_bucket": "pythontest-64ae2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81761951873:android:7415edc6cecac1e889ad80",
+        "android_client_info": {
+          "package_name": "com.yach.projetoagua"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "81761951873-kr0chkceoq71bp6fsn5n6lt6086k9h44.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKLhqGfg7wjNG9e7Tp_n-W8Vtk9EVpuXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "81761951873-kr0chkceoq71bp6fsn5n6lt6086k9h44.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

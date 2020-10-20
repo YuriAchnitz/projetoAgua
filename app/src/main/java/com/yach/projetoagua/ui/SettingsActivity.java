@@ -12,6 +12,8 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.common.server.response.FastJsonResponse;
+import com.google.gson.JsonObject;
 import com.yach.projetoagua.R;
 import com.yach.projetoagua.data.Post;
 import com.yach.projetoagua.data.ProjetoAguaApi;
@@ -19,7 +21,9 @@ import com.yach.projetoagua.data.UserPreferences;
 import com.yach.projetoagua.data.UserData;
 
 import java.util.List;
+import java.util.Objects;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     protected void onResume() {
         super.onResume();
 
-        mViewHolder.manualCep.setText(mSharedPreferences.getStorageString(UserData.MANUAL_CEP));
+        mViewHolder.manualCep.setText(mSharedPreferences.getStorageString(UserData.MANUAL_CEP_NUM));
     }
 
     @Override
@@ -145,6 +149,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 validateCep(cep);
             } else if (mViewHolder.manualCep.length() == 0) {
                 mSharedPreferences.storeString(UserData.MANUAL_CEP, "");
+                mSharedPreferences.storeString(UserData.MANUAL_CEP_NUM, "");
                 Toast toast = Toast.makeText(getApplicationContext(),
                         "CEP removido",
                         Toast.LENGTH_SHORT);
@@ -161,11 +166,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void validateCep(String cep) {
-        Call<List<Post>> call = projetoAguaApi.getCep(cep);
+        Call<JsonObject> call = projetoAguaApi.getCep(cep);
 
-        call.enqueue(new Callback<List<Post>>() {
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (!response.isSuccessful()) {
                     Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
                             "Código: " + response.code(),
@@ -180,33 +185,33 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     return;
                 }
 
-                List<Post> posts = response.body();
-                for (Post post : posts) {
-                    String bairro = post.getBairro();
-                    String localidade = post.getLocalidade();
-                    Boolean erro = post.getErro();
+                assert response.body() != null;
+                try {
+                    String bairro = response.body().get("bairro").getAsString();
+                    String localidade = response.body().get("localidade").getAsString();
 
-                    if (!erro) {
-                        mSharedPreferences.storeString(UserData.MANUAL_CEP, bairro);
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "Sua localização agora é: " + bairro,
-                                Toast.LENGTH_SHORT);
-                        toast.show();
-                    } else {
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "CEP inexistente",
-                                Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
+                    mSharedPreferences.storeString(UserData.MANUAL_CEP, bairro);
+                    mSharedPreferences.storeString(UserData.MANUAL_CEP_NUM, mViewHolder.manualCep.getText().toString());
 
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Sua localização agora é: " + bairro + " - " + mViewHolder.manualCep.getText().toString() + " - " + localidade,
+                            Toast.LENGTH_LONG);
+                    toast.show();
+                } catch (Exception e) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Erro ao validar CEP",
+                            Toast.LENGTH_SHORT);
+                    toast.show();
                 }
+
             }
 
+
             @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast toastFailure = Toast.makeText(getApplicationContext(),
-                        "Erro para se conectar",
-                        Toast.LENGTH_SHORT);
+                        "Sem resposta: " + t.getMessage(),
+                        Toast.LENGTH_LONG);
                 toastFailure.show();
 
                 //validateCep(mViewHolder.manualCep.getText().toString());

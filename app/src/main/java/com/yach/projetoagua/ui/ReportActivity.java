@@ -1,15 +1,20 @@
 package com.yach.projetoagua.ui;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,6 +48,8 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
     private UserPreferences mSharedPreferences;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private static final int REQUEST_IMAGE_CAPTURE = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +79,10 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
 
         this.mViewHolder.postReport = findViewById(R.id.post_report);
         this.mViewHolder.postReport.setOnClickListener(this);
+
+        this.mViewHolder.selectedImage = findViewById(R.id.selected_image);
+        //this.mViewHolder.takePicture = findViewById(R.id.take_picture);
+        //this.mViewHolder.takePicture.setOnClickListener(this);
     }
 
     @Override
@@ -133,9 +144,8 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
                 postReport(user, name, location, desc, date);
                 //postOldReport(user, name, location, desc, date);
             }
-
-
         }
+
     }
 
     private void postReport(String userId, String name, String location, String desc, String date) {
@@ -209,6 +219,25 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+    /*
+    public void takePicture(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap image = (Bitmap) extras.get("data");
+            mViewHolder.selectedImage.setImageBitmap(image);
+        }
+
+    }
+     */
 
     private static class ViewHolder {
         ImageButton gotoHome;
@@ -216,6 +245,9 @@ public class ReportActivity extends AppCompatActivity implements View.OnClickLis
         ImageButton gotoSettings;
 
         Button postReport;
+
+        ImageView selectedImage;
+        ImageButton takePicture;
 
         EditText reportName;
         EditText reportCep;

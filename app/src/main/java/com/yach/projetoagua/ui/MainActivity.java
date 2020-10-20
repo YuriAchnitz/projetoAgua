@@ -5,47 +5,31 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.core.OrderBy;
 import com.yach.projetoagua.R;
-import com.yach.projetoagua.data.Post;
-import com.yach.projetoagua.data.ProjetoAguaApi;
 import com.yach.projetoagua.data.UserData;
 import com.yach.projetoagua.data.UserPreferences;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.yach.projetoagua.R.color.BLACK;
-import static com.yach.projetoagua.R.color.LIGHT_GREY;
-import static com.yach.projetoagua.R.color.RED;
-import static com.yach.projetoagua.R.color.WHITE;
-import static com.yach.projetoagua.R.color.YELLOW;
-import static com.yach.projetoagua.R.color.newsCardBodyColor;
 
 
 @SuppressWarnings("ALL")
@@ -53,13 +37,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private UserPreferences mSharedPreferences;
     private ViewHolder mViewHolder = new ViewHolder();
-    private ProjetoAguaApi projetoAguaApi;
     String dateOfToday;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.mSharedPreferences = new UserPreferences(this);
@@ -67,13 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Calendar c = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         dateOfToday = sdf.format(c.getTime());
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://viniferr-watermonitor.herokuapp.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        projetoAguaApi = retrofit.create(ProjetoAguaApi.class);
 
         this.mViewHolder.gotoNews = findViewById(R.id.icon_news);
         this.mViewHolder.gotoReport = findViewById(R.id.icon_report);
@@ -89,14 +66,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.mViewHolder.errorButton = findViewById(R.id.error_button);
         this.mViewHolder.errorButton.setOnClickListener(this);
 
-
         this.mViewHolder.newsLayout = findViewById(R.id.card_news_layout);
         this.mViewHolder.emergencyLayout = findViewById(R.id.card_emergency_layout);
-        this.mViewHolder.adviceLayout = findViewById(R.id.card_advice_layout);
+        this.mViewHolder.warningLayout = findViewById(R.id.card_advice_layout);
 
-        cepMessage();
+        if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).equals("")) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Adicione seu CEP na tela de configurações para receber avisos",
+                    Toast.LENGTH_LONG);
+            toast.show();
+        }
 
-        userId();
+        if (mSharedPreferences.getStorageString(UserData.USER_ID).equals("")) {
+            String UserId1 = UUID.randomUUID().toString().substring(0, 9);
+            String UserId2 = UUID.randomUUID().toString().substring(0, 8);
+            String UserId = UserId1 + UserId2;
+            mSharedPreferences.storeString(UserData.USER_ID, UserId);
+        }
 
         /*
         Toast toast = Toast.makeText(getApplicationContext(),
@@ -106,22 +92,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         */
     }
 
-    private void cepMessage() {
-        if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    "Adicione seu CEP na tela de configurações para receber avisos",
-                    Toast.LENGTH_LONG);
-            toast.show();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        aquireData();
     }
 
-    private void userId() {
-        if (mSharedPreferences.getStorageString(UserData.USER_ID).equals("")) {
-            String UserId1 = UUID.randomUUID().toString().substring(0, 9);
-            String UserId2 = UUID.randomUUID().toString().substring(0, 8);
-            String UserId = UserId1 + UserId2;
-            mSharedPreferences.storeString(UserData.USER_ID, UserId);
+    private void aquireData() {
+        mViewHolder.emergencyLayout.removeAllViews();
+        mViewHolder.warningLayout.removeAllViews();
+        mViewHolder.newsLayout.removeAllViews();
+
+        if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP_NUM).length() == 8) {
+            getEmergency();
+            getWarning();
         }
+        getNews();
     }
 
     @Override
@@ -148,37 +135,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (v.getId() == R.id.icon_home) {
-            mViewHolder.emergencyLayout.removeAllViews();
-            mViewHolder.adviceLayout.removeAllViews();
-            mViewHolder.newsLayout.removeAllViews();
+            aquireData();
 
-            if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
-                getEmergency();
-                getWarning();
-                //getOldEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
-                //getOldWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
-            }
-            getNews();
-            //getOldNews("all", "news", "all");
-
-            /*
+           /*
             Intent intent = new Intent(getApplicationContext(), JsonTesterActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-
-            /*
-            String emergency_title = "Atenção!";
-            String emergency_content = "Falta de água iminente";
-            populateEmergencyCards(emergency_title, emergency_content);
-
-            String advice_title = "Aviso";
-            String advice_content = "Economize água";
-            populateAdviceCards(advice_title, advice_content);
-
-            String date = "28/09/2020";
-            String news_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam bibendum orci ligula, in imperdiet metus hendrerit a. Nunc maximus tortor eget orci mattis, eget convallis diam sagittis.";
-            populateNewsCards("Aqui vai o título da notícia", news_content, date);
-            populateNewsCards("O título da notícia vai aqui", news_content, date);
             */
         }
 
@@ -192,52 +154,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             mViewHolder.errorButton.setLayoutParams(layoutParams);
 
-            mViewHolder.emergencyLayout.removeAllViews();
-            mViewHolder.adviceLayout.removeAllViews();
-            mViewHolder.newsLayout.removeAllViews();
-
-            if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
-                getEmergency();
-                getWarning();
-                //getOldEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
-                //getOldWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
-            }
-            getNews();
-            //getOldNews("all", "news", "all");
+            aquireData();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mViewHolder.emergencyLayout.removeAllViews();
-        mViewHolder.adviceLayout.removeAllViews();
-        mViewHolder.newsLayout.removeAllViews();
-
-        if (mSharedPreferences.getStorageString(UserData.MANUAL_CEP).length() == 8) {
-            getEmergency();
-            getWarning();
-            //getOldEmergency(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "emergency", "all");
-            //getOldWarning(mSharedPreferences.getStorageString(UserData.MANUAL_CEP), "warning", "all");
-        }
-        getNews();
-        //getOldNews("all", "news", "all");
     }
 
     private void getNews() {
         db.collection("news")
+                .orderBy("date", Query.Direction.DESCENDING).limit(3)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            mViewHolder.newsLayout.removeAllViews();
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String title = document.getString("title");
                                 String text = document.getString("text");
                                 //String location = document.getString("location");
                                 String date = document.getString("date");
                                 //String exp_date = document.getString("exp_date");
-                                //String ext_link = document.getString("ext_link");
+                                String ext_link = document.getString("ext_link");
 
                                 String showDate;
                                 String year, month, day;
@@ -248,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                 showDate = (day + "/" + month + "/" + year);
 
-                                populateNewsCards(title, text, showDate);
+                                populateNewsCards(title, text, showDate, ext_link);
                             }
                         } else {
                             Toast toastFailure = Toast.makeText(getApplicationContext(),
@@ -264,13 +201,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getEmergency() {
         db.collection("emergency")
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            mViewHolder.emergencyLayout.removeAllViews();
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String content = "EMERGENCY\n";
                                 String title = document.getString("title");
                                 String text = document.getString("text");
                                 String location = document.getString("location");
@@ -278,9 +217,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 String exp_date = document.getString("exp_date");
                                 String ext_link = document.getString("ext_link");
 
-                                if (dateOfToday.compareTo(date) >= 0) {
-                                    if (dateOfToday.compareTo(exp_date) < 0) {
-                                        populateEmergencyCards(title, text);
+                                if (location.equals(mSharedPreferences.getStorageString(UserData.MANUAL_CEP))) {
+                                    if (dateOfToday.compareTo(date) >= 0) {
+                                        if (dateOfToday.compareTo(exp_date) <= 0) {
+                                            populateEmergencyCards(title, text);
+                                        }
                                     }
                                 }
 
@@ -297,11 +238,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getWarning() {
         db.collection("warnings")
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            mViewHolder.warningLayout.removeAllViews();
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String title = document.getString("title");
                                 String text = document.getString("text");
@@ -310,9 +254,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 String exp_date = document.getString("exp_date");
                                 String ext_link = document.getString("ext_link");
 
-                                if (dateOfToday.compareTo(date) >= 0) {
-                                    if (dateOfToday.compareTo(exp_date) < 0) {
-                                        populateWarningCards(title, text);
+                                if (location.equals(mSharedPreferences.getStorageString(UserData.MANUAL_CEP))) {
+                                    if (dateOfToday.compareTo(date) >= 0) {
+                                        if (dateOfToday.compareTo(exp_date) <= 0) {
+                                            populateWarningCards(title, text);
+                                        }
                                     }
                                 }
 
@@ -327,150 +273,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    public void getOldNews(String cep, String type, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
-
-        call.enqueue(new Callback<List<Post>>() {
-            @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if (!response.isSuccessful()) {
-                    Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Código: " + response.code(),
-                            Toast.LENGTH_SHORT);
-                    toastNotSuccessful.show();
-
-                    callErrorButton();
-
-                    return;
-                }
-
-                mViewHolder.newsLayout.removeAllViews();
-
-                List<Post> posts = response.body();
-
-                int cont = 0;
-                for (Post post : posts) {
-                    if (post.getType().equals("news")) {
-                        if (cont == 3) {
-                            return;
-                        }
-                        String title = post.getTitle();
-                        String content = post.getText();
-                        String date = post.getDate();
-
-                        String showDate;
-                        String year, month, day;
-
-                        year = date.substring(0, 4);
-                        month = date.substring(5, 7);
-                        day = date.substring(8, 10);
-
-                        showDate = (day + "/" + month + "/" + year);
-
-                        populateNewsCards(title, content, showDate);
-                        cont++;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
-                Toast toastFailure = Toast.makeText(getApplicationContext(),
-                        t.getMessage(),
-                        Toast.LENGTH_SHORT);
-                toastFailure.show();
-
-                callErrorButton();
-            }
-        });
-    }
-
-    public void getOldEmergency(String cep, String type, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
-
-        call.enqueue(new Callback<List<Post>>() {
-            @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if (!response.isSuccessful()) {
-                    /*Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Código: " + response.code(),
-                            Toast.LENGTH_SHORT);
-                    toastNotSuccessful.show();*/
-
-                    return;
-                }
-
-                mViewHolder.emergencyLayout.removeAllViews();
-
-                List<Post> posts = response.body();
-
-                for (Post post : posts) {
-                    if (post.getType().equals("emergency")) {
-                        String title = post.getTitle();
-                        String content = post.getText();
-
-                        populateEmergencyCards(title, content);
-
-                        return;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
-                Toast toastFailure = Toast.makeText(getApplicationContext(),
-                        t.getMessage(),
-                        Toast.LENGTH_SHORT);
-                toastFailure.show();
-
-                callErrorButton();
-            }
-        });
-    }
-
-    public void getOldWarning(String cep, String type, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
-
-        call.enqueue(new Callback<List<Post>>() {
-            @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if (!response.isSuccessful()) {
-                    /*Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Código: " + response.code(),
-                            Toast.LENGTH_SHORT);
-                    toastNotSuccessful.show();*/
-
-                    return;
-                }
-
-                mViewHolder.adviceLayout.removeAllViews();
-
-                List<Post> posts = response.body();
-
-                for (Post post : posts) {
-                    if (post.getType().equals("warning")) {
-                        String title = post.getTitle();
-                        String content = post.getText();
-
-                        populateWarningCards(title, content);
-
-                        return;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
-                Toast toastFailure = Toast.makeText(getApplicationContext(),
-                        t.getMessage(),
-                        Toast.LENGTH_SHORT);
-                toastFailure.show();
-
-                callErrorButton();
-            }
-        });
-    }
-
     public void callErrorButton() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -483,206 +285,97 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void populateEmergencyCards(String title, String content) {
-        LinearLayout emergencyBody = new LinearLayout(getApplicationContext());
-
-        CardView cardView = new CardView(getApplicationContext());
-
-        TextView attention = new TextView(getApplicationContext());
-        TextView reason = new TextView(getApplicationContext());
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        LinearLayout.LayoutParams linearParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        layoutParams.setMargins(15, 15, 15, 20);
+        linearParams.setMargins(0, 0, 0, 50);
 
-        LinearLayout.LayoutParams mainBody = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        CardView.LayoutParams cardParams = new CardView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        mainBody.setMargins(0, 0, 0, 50);
+        cardParams.setMargins(0, 0, 0, 30);
 
-        emergencyBody.setLayoutParams(layoutParams);
+        CardView emergencyCard = (CardView) getLayoutInflater().inflate(R.layout.emergency_card, null);
+        emergencyCard.setLayoutParams(cardParams);
 
-        emergencyBody.setOrientation(LinearLayout.VERTICAL);
+        TextView em_title = emergencyCard.findViewById(R.id.emergency_title);
+        TextView em_content = emergencyCard.findViewById(R.id.emergency_content);
 
-        cardView.setLayoutParams(layoutParams);
+        em_title.setText(title);
+        em_content.setText(content);
 
-        cardView.setRadius(15);
-        cardView.setBackgroundColor(getResources().getColor(RED));
-        cardView.setMaxCardElevation(30);
-        cardView.setMaxCardElevation(6);
-
-        attention.setText(title);
-        attention.setTextColor(getResources().getColor(WHITE));
-        attention.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        attention.setTextSize(22);
-        attention.setTypeface(Typeface.DEFAULT_BOLD);
-
-        reason.setText(content);
-        reason.setTextColor(getResources().getColor(WHITE));
-        reason.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        reason.setTextSize(16);
-
-        emergencyBody.addView(attention);
-        emergencyBody.addView(reason);
-
-        cardView.addView(emergencyBody);
-
-        this.mViewHolder.emergencyLayout.setLayoutParams(mainBody);
-        this.mViewHolder.emergencyLayout.addView(cardView);
+        this.mViewHolder.emergencyLayout.setLayoutParams(linearParams);
+        this.mViewHolder.emergencyLayout.addView(emergencyCard);
     }
 
     public void populateWarningCards(String title, String content) {
-        LinearLayout emergencyBody = new LinearLayout(getApplicationContext());
-
-        CardView cardView = new CardView(getApplicationContext());
-
-        TextView attention = new TextView(getApplicationContext());
-        TextView reason = new TextView(getApplicationContext());
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        LinearLayout.LayoutParams linearParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        layoutParams.setMargins(15, 15, 15, 20);
+        linearParams.setMargins(0, 0, 0, 70);
 
-        LinearLayout.LayoutParams mainBody = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        CardView.LayoutParams cardParams = new CardView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        mainBody.setMargins(0, 0, 0, 120);
+        cardParams.setMargins(0, 0, 0, 30);
 
-        emergencyBody.setLayoutParams(layoutParams);
+        CardView warningCard = (CardView) getLayoutInflater().inflate(R.layout.warning_card, null);
+        warningCard.setLayoutParams(cardParams);
 
-        emergencyBody.setOrientation(LinearLayout.VERTICAL);
+        TextView wa_title = warningCard.findViewById(R.id.warning_title);
+        TextView wa_content = warningCard.findViewById(R.id.warning_content);
 
-        cardView.setLayoutParams(layoutParams);
+        wa_title.setText(title);
+        wa_content.setText(content);
 
-        cardView.setRadius(15);
-        cardView.setBackgroundColor(getResources().getColor(YELLOW));
-        cardView.setMaxCardElevation(30);
-        cardView.setMaxCardElevation(6);
-
-        attention.setText(title);
-        attention.setTextColor(getResources().getColor(BLACK));
-        attention.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        attention.setTextSize(22);
-        attention.setTypeface(Typeface.DEFAULT_BOLD);
-
-        reason.setText(content);
-        reason.setTextColor(getResources().getColor(BLACK));
-        reason.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        reason.setTextSize(16);
-
-        emergencyBody.addView(attention);
-        emergencyBody.addView(reason);
-
-        cardView.addView(emergencyBody);
-
-        this.mViewHolder.adviceLayout.setLayoutParams(mainBody);
-        this.mViewHolder.adviceLayout.addView(cardView);
+        this.mViewHolder.warningLayout.setLayoutParams(linearParams);
+        this.mViewHolder.warningLayout.addView(warningCard);
     }
 
-    public void populateNewsCards(String title, String news_content, String date) {
-        LinearLayout newsCardBody = new LinearLayout(getApplicationContext());
-        LinearLayout newsTextBody = new LinearLayout(getApplicationContext());
-        LinearLayout titleBar = new LinearLayout(getApplicationContext());
-        RelativeLayout image = new RelativeLayout(getApplicationContext());
-
-        CardView cardView = new CardView(getApplicationContext());
-
-        TextView newsTitle = new TextView(getApplicationContext());
-        TextView newsDate = new TextView(getApplicationContext());
-        TextView newsText = new TextView(getApplicationContext());
-
-        ImageView newsThumbnail = new ImageView(getApplicationContext());
-
-        LinearLayout.LayoutParams mainBody = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+    public void populateNewsCards(String title, String content, String date, final String link) {
+        LinearLayout.LayoutParams linearParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        mainBody.setMargins(0, 0, 0, 30);
+        linearParams.setMargins(0, 0, 0, 35);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        CardView.LayoutParams cardParams = new CardView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        layoutParams.setMargins(10, 10, 10, 10);
+        cardParams.setMargins(0, 0, 0, 30);
 
-        LinearLayout.LayoutParams titleBarParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
+        CardView newsCard = (CardView) getLayoutInflater().inflate(R.layout.news_card, null);
+        newsCard.setLayoutParams(cardParams);
 
-        RelativeLayout.LayoutParams centerImage = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-        );
+        newsCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.news_card_body) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(link));
+                    startActivity(i);
+                }
+            }
+        });
 
-        newsCardBody.setOrientation(LinearLayout.VERTICAL);
-        newsCardBody.setLayoutParams(layoutParams);
+        TextView ns_title = newsCard.findViewById(R.id.news_title);
+        TextView ns_content = newsCard.findViewById(R.id.news_content);
+        TextView ns_date = newsCard.findViewById(R.id.news_date);
 
+        ns_title.setText(title);
+        ns_date.setText(date);
+        ns_content.setText(content);
 
-        cardView.setLayoutParams(mainBody);
+        this.mViewHolder.newsLayout.addView(newsCard);
+    }
 
-        cardView.setRadius(15);
-        cardView.setBackgroundResource(R.drawable.news_card_background);
-        cardView.setMaxCardElevation(30);
-        cardView.setMaxCardElevation(6);
+    public void onCardClick(View v, String link) {
 
-        //NEWS THUMBNAIL
-        image.setLayoutParams(centerImage);
-        image.getLayoutParams().height = 450;
-
-        newsThumbnail.setImageResource(R.drawable.water_landscape_temp);
-        newsThumbnail.setScaleType(ImageView.ScaleType.FIT_XY);
-        //
-
-        //NEWS TITLE
-        titleBar.setOrientation(LinearLayout.VERTICAL);
-        titleBar.setLayoutParams(titleBarParams);
-
-        newsTitle.setPadding(10, 0, 10, 0);
-        newsTitle.setText(title);
-        newsTitle.setGravity(Gravity.START);
-        newsTitle.setTextColor(getResources().getColor(WHITE));
-        newsTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        newsTitle.setTextSize(22);
-
-        newsDate.setPadding(10, 10, 10, 10);
-        newsDate.setText(date);
-        newsDate.setGravity(Gravity.END);
-        newsDate.setTextColor(getResources().getColor(LIGHT_GREY));
-        newsDate.setTextSize(14);
-        //
-
-        //NEWS CONTENT
-        newsTextBody.setLayoutParams(layoutParams);
-        newsText.setPadding(10, 10, 10, 10);
-        newsTextBody.setBackgroundResource(R.drawable.news_content_background);
-
-        newsText.setLayoutParams(layoutParams);
-        newsText.setText(news_content);
-        newsText.setTextColor(getResources().getColor(newsCardBodyColor));
-        newsText.setGravity(Gravity.START);
-        newsText.setTextSize(12);
-        //
-
-        image.addView(newsThumbnail);
-
-        newsCardBody.addView(image);
-
-        titleBar.addView(newsTitle);
-        titleBar.addView(newsDate);
-
-        newsCardBody.addView(titleBar);
-
-        newsTextBody.addView(newsText);
-        newsCardBody.addView(newsTextBody);
-        cardView.addView(newsCardBody);
-
-        this.mViewHolder.newsLayout.addView(cardView);
     }
 
     private static class ViewHolder {
@@ -697,6 +390,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         LinearLayout emergencyLayout;
 
-        LinearLayout adviceLayout;
+        LinearLayout warningLayout;
     }
 }

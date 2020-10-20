@@ -31,4 +31,6 @@
     <string name="botao_noticias">Botão para ir às notícias</string>
     <string name="botao_recarregar_tela">Botão para recarregar a tela</string>
     <string name="botao_inicio">Botão para ir à tela de início</string>
+    <string name="tirar_uma_foto">Tirar uma foto</string>
+    <string name="escolher_uma_foto">Escolher uma foto</string>
 </resources>

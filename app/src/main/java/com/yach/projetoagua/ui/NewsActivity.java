@@ -1,16 +1,17 @@
 package com.yach.projetoagua.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -19,12 +20,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.JsonObject;
 import com.yach.projetoagua.R;
-import com.yach.projetoagua.data.Post;
 import com.yach.projetoagua.data.ProjetoAguaApi;
 
 import java.util.Calendar;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,18 +38,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.yach.projetoagua.R.color.LIGHT_GREY;
-import static com.yach.projetoagua.R.color.WHITE;
-import static com.yach.projetoagua.R.color.newsCardBodyColor;
-
-
 @SuppressWarnings("ALL")
 public class NewsActivity extends AppCompatActivity implements View.OnClickListener {
 
     DatePickerDialog picker;
     private ViewHolder mViewHolder = new ViewHolder();
     private ProjetoAguaApi projetoAguaApi;
-    private String date = "";
+    private String userLocation = "";
+    private String limDate = "";
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +55,7 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_news);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://viniferr-watermonitor.herokuapp.com/")
+                .baseUrl("https://viacep.com.br/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -84,6 +88,10 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
+        aquireData();
+    }
+
+    private void aquireData() {
         mViewHolder.newsCards.removeAllViews();
         String cep = mViewHolder.insertCep.getText().toString();
         if (cep.length() > 0 && cep.length() < 8) {
@@ -92,16 +100,16 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.LENGTH_SHORT);
             toastFailure.show();
         } else if (cep.length() == 0) {
-            if (date.equals("")) {
-                getNews("all", "news", "all");
+            if (limDate.equals("")) {
+                getAllNews();
             } else {
-                getNews("all", "news", date);
+                getDateNews();
             }
         } else if (cep.length() == 8) {
-            if (date.equals("")) {
-                getNews(cep, "news", "all");
+            if (limDate.equals("")) {
+                validateCep(cep, 0);
             } else {
-                getNews(cep, "news", date);
+                validateCep(cep, 1);
             }
         }
     }
@@ -122,18 +130,18 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     if (month + 1 < 10) {
                         if (dayOfMonth < 10) {
-                            date = (year + "-" + "0" + (month + 1) + "-" + "0" + dayOfMonth);
+                            limDate = (year + "-" + "0" + (month + 1) + "-" + "0" + dayOfMonth);
                             mViewHolder.selectDate.setText("0" + dayOfMonth + "/" + "0" + (month + 1) + "/" + year);
                         } else {
-                            date = (year + "-" + "0" + (month + 1) + "-" + dayOfMonth);
+                            limDate = (year + "-" + "0" + (month + 1) + "-" + dayOfMonth);
                             mViewHolder.selectDate.setText(dayOfMonth + "/" + "0" + (month + 1) + "/" + year);
                         }
                     } else {
                         if (dayOfMonth < 10) {
-                            date = (year + "-" + (month + 1) + "-" + "0" + dayOfMonth);
+                            limDate = (year + "-" + (month + 1) + "-" + "0" + dayOfMonth);
                             mViewHolder.selectDate.setText("0" + dayOfMonth + "/" + (month + 1) + "/" + year);
                         } else {
-                            date = (year + "-" + (month + 1) + "-" + dayOfMonth);
+                            limDate = (year + "-" + (month + 1) + "-" + dayOfMonth);
                             mViewHolder.selectDate.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
                         }
                     }
@@ -143,26 +151,7 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (v.getId() == R.id.refresh_button) {
-            mViewHolder.newsCards.removeAllViews();
-            String cep = mViewHolder.insertCep.getText().toString();
-            if (cep.length() > 0 && cep.length() < 8) {
-                Toast toastFailure = Toast.makeText(getApplicationContext(),
-                        "CEP inválido",
-                        Toast.LENGTH_SHORT);
-                toastFailure.show();
-            } else if (cep.length() == 0) {
-                if (date.equals("")) {
-                    getNews("all", "news", "all");
-                } else {
-                    getNews("all", "news", date);
-                }
-            } else if (cep.length() == 8) {
-                if (date.equals("")) {
-                    getNews(cep, "news", "all");
-                } else {
-                    getNews(cep, "news", date);
-                }
-            }
+            aquireData();
         }
 
         if (v.getId() == R.id.icon_home) {
@@ -190,8 +179,8 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
             mViewHolder.newsCards.removeAllViews();
             mViewHolder.selectDate.setText(R.string.selecione_a_data);
             mViewHolder.insertCep.setText("");
-            date = "";
-            getNews("all", "news", "all");
+            limDate = "";
+            getAllNews();
             /*
             String news_content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam bibendum orci ligula, in imperdiet metus hendrerit a. Nunc maximus tortor eget orci mattis, eget convallis diam sagittis.";
             populateNewsCards("Título da notícia", news_content, "28/09/2020");
@@ -200,134 +189,265 @@ public class NewsActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void populateNewsCards(String title, String news_content, String date) {
-        LinearLayout newsTextBody = new LinearLayout(getApplicationContext());
-        LinearLayout newsCardBody = new LinearLayout(getApplicationContext());
+    private void getAllNews() {
+        db.collection("news")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            mViewHolder.newsCards.removeAllViews();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                String location = document.getString("location");
+                                String ndate = document.getString("date");
+                                //String exp_date = document.getString("exp_date");
+                                String ext_link = document.getString("ext_link");
 
-        CardView cardView = new CardView(getApplicationContext());
+                                String showDate;
+                                String year, month, day;
 
-        TextView newsTitle = new TextView(getApplicationContext());
-        TextView newsDate = new TextView(getApplicationContext());
-        TextView newsText = new TextView(getApplicationContext());
+                                year = ndate.substring(0, 4);
+                                month = ndate.substring(5, 7);
+                                day = ndate.substring(8, 10);
 
+                                showDate = (day + "/" + month + "/" + year);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        layoutParams.setMargins(10, 10, 10, 10);
-
-        LinearLayout.LayoutParams titleBarParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-
-        cardView.setLayoutParams(layoutParams);
-
-        cardView.setRadius(15);
-        cardView.setBackgroundResource(R.drawable.news_card_background);
-        cardView.setMaxCardElevation(30);
-        cardView.setMaxCardElevation(6);
-
-        //NEWS TITLE
-        newsCardBody.setOrientation(LinearLayout.VERTICAL);
-        newsCardBody.setLayoutParams(titleBarParams);
-        newsCardBody.setLayoutParams(layoutParams);
-
-        newsTitle.setPadding(10, 0, 10, 0);
-        newsTitle.setText(title);
-        newsTitle.setGravity(Gravity.START);
-        newsTitle.setTextColor(getResources().getColor(WHITE));
-        newsTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        newsTitle.setTextSize(22);
-
-        newsDate.setPadding(10, 10, 10, 10);
-        newsDate.setText(date);
-        newsDate.setGravity(Gravity.END);
-        newsDate.setTextColor(getResources().getColor(LIGHT_GREY));
-        newsDate.setTextSize(14);
-        //
-
-        //NEWS CONTENT
-        newsTextBody.setLayoutParams(layoutParams);
-        newsTextBody.setBackgroundResource(R.drawable.news_content_background);
-
-        newsText.setLayoutParams(layoutParams);
-        newsText.setText(news_content);
-        newsText.setTextColor(getResources().getColor(newsCardBodyColor));
-        newsText.setGravity(Gravity.START);
-        newsText.setTextSize(12);
-        //
-
-        newsCardBody.addView(newsTitle);
-        newsCardBody.addView(newsDate);
-
-        newsTextBody.addView(newsText);
-        newsCardBody.addView(newsTextBody);
-
-        cardView.addView(newsCardBody);
-
-
-        this.mViewHolder.newsCards.addView(cardView);
+                                populateNewsCards(title, text, showDate, ext_link);
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nas notícias, tente novamente",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+                        }
+                    }
+                });
     }
 
-    public void getNews(String cep, String type, String date) {
-        Call<List<Post>> call = projetoAguaApi.getAllCustom(cep, type, date);
+    private void getLocationNews(final String limLocation) {
+        db.collection("news")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            mViewHolder.newsCards.removeAllViews();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                String location = document.getString("location");
+                                String ndate = document.getString("date");
+                                //String exp_date = document.getString("exp_date");
+                                String ext_link = document.getString("ext_link");
 
-        call.enqueue(new Callback<List<Post>>() {
+                                String showDate;
+                                String year, month, day;
+
+                                year = ndate.substring(0, 4);
+                                month = ndate.substring(5, 7);
+                                day = ndate.substring(8, 10);
+
+                                showDate = (day + "/" + month + "/" + year);
+
+                                if (location.equals(limLocation)) {
+                                    populateNewsCards(title, text, showDate, ext_link);
+                                }
+
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nas notícias, tente novamente",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+                        }
+                    }
+                });
+    }
+
+    private void getDateNews() {
+        db.collection("news")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            mViewHolder.newsCards.removeAllViews();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                String location = document.getString("location");
+                                String ndate = document.getString("date");
+                                //String exp_date = document.getString("exp_date");
+                                String ext_link = document.getString("ext_link");
+
+                                String showDate;
+                                String year, month, day;
+
+                                year = ndate.substring(0, 4);
+                                month = ndate.substring(5, 7);
+                                day = ndate.substring(8, 10);
+
+                                showDate = (day + "/" + month + "/" + year);
+
+                                if (limDate.compareTo(ndate) >= 0) {
+                                    populateNewsCards(title, text, showDate, ext_link);
+                                }
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nas notícias, tente novamente",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+                        }
+                    }
+                });
+    }
+
+    private void getDateLocationNews(final String limLocation) {
+        db.collection("news")
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            mViewHolder.newsCards.removeAllViews();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String title = document.getString("title");
+                                String text = document.getString("text");
+                                String location = document.getString("location");
+                                String ndate = document.getString("date");
+                                //String exp_date = document.getString("exp_date");
+                                String ext_link = document.getString("ext_link");
+
+                                String showDate;
+                                String year, month, day;
+
+                                year = ndate.substring(0, 4);
+                                month = ndate.substring(5, 7);
+                                day = ndate.substring(8, 10);
+
+                                showDate = (day + "/" + month + "/" + year);
+
+                                if (location.equals(limLocation)) {
+                                    if (limDate.compareTo(ndate) >= 0) {
+                                        populateNewsCards(title, text, showDate, ext_link);
+                                    }
+                                }
+                            }
+                        } else {
+                            Toast toastFailure = Toast.makeText(getApplicationContext(),
+                                    "Ocorreu um erro nas notícias, tente novamente",
+                                    Toast.LENGTH_SHORT);
+                            toastFailure.show();
+                        }
+                    }
+                });
+    }
+
+    public void validateCep(String cep, final int type) {
+        Call<JsonObject> call = projetoAguaApi.getCep(cep);
+
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (!response.isSuccessful()) {
+                    /*Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
+                            "Código: " + response.code(),
+                            Toast.LENGTH_SHORT);
+                    toastNotSuccessful.show();*/
+
                     Toast toastNotSuccessful = Toast.makeText(getApplicationContext(),
-                            "Code: " + response.code(),
+                            "CEP inválido",
                             Toast.LENGTH_SHORT);
                     toastNotSuccessful.show();
+
                     return;
                 }
 
-                List<Post> posts = response.body();
+                assert response.body() != null;
+                try {
+                    String bairro = response.body().get("bairro").getAsString();
+                    String localidade = response.body().get("localidade").getAsString();
 
-                for (Post post : posts) {
-                    if (post.getType().equals("news")) {
-                        String title = post.getTitle();
-                        String content = post.getText();
-                        String date = post.getDate();
+                    userLocation = bairro;
 
-                        String showDate;
-                        String year, month, day;
-
-                        year = date.substring(0, 4);
-                        month = date.substring(5, 7);
-                        day = date.substring(8, 10);
-
-                        showDate = (day + "/" + month + "/" + year);
-
-                        populateNewsCards(title, content, showDate);
+                    if (type == 0) {
+                        getLocationNews(userLocation);
+                    } else {
+                        getDateLocationNews(userLocation);
                     }
+
+                } catch (Exception e) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "CEP inválido",
+                            Toast.LENGTH_SHORT);
+                    toast.show();
                 }
+
             }
 
+
             @Override
-            public void onFailure(Call<List<Post>> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
                 Toast toastFailure = Toast.makeText(getApplicationContext(),
-                        t.getMessage(),
+                        "Erro ao validar o CEP",
                         Toast.LENGTH_SHORT);
                 toastFailure.show();
+
+                //validateCep(mViewHolder.manualCep.getText().toString());
+            }
+        });
+    }
+
+
+    public void populateNewsCards(String title, String ns_content, String date, final String link) {
+        CardView.LayoutParams cardParams = new CardView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, 0, 0, 30);
+
+        final CardView newsSimpleCard = (CardView) getLayoutInflater().inflate(R.layout.news_simple_card, null);
+        newsSimpleCard.setLayoutParams(cardParams);
+
+        newsSimpleCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.news_simple_card_body) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(link));
+                    startActivity(i);
+                }
             }
         });
 
-    }
+        TextView nss_title=newsSimpleCard.findViewById(R.id.news_simple_title);
+        TextView nss_date=newsSimpleCard.findViewById(R.id.news_simple_date);
+        TextView nss_content=newsSimpleCard.findViewById(R.id.news_simple_content);
 
-    private static class ViewHolder {
-        EditText insertCep;
-        Button selectDate;
-        ImageButton refreshButton;
+        nss_title.setText(title);
+        nss_date.setText(date);
+        nss_content.setText(ns_content);
 
-        ImageButton gotoHome;
-        ImageButton gotoReport;
-        ImageButton gotoSettings;
-        ImageButton newsRefresh;
+        this.mViewHolder.newsCards.addView(newsSimpleCard);
+        }
 
-        LinearLayout newsCards;
-    }
+private static class ViewHolder {
+    EditText insertCep;
+    Button selectDate;
+    ImageButton refreshButton;
+
+    ImageButton gotoHome;
+    ImageButton gotoReport;
+    ImageButton gotoSettings;
+    ImageButton newsRefresh;
+
+    LinearLayout newsCards;
+}
 }

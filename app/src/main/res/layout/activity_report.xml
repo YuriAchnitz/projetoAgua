@@ -193,7 +193,7 @@
                 android:layout_below="@id/report_description"
                 android:layout_centerHorizontal="true"
                 android:layout_marginHorizontal="10dp"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="30dp"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
 
@@ -207,33 +207,44 @@
                     android:textSize="18sp" />
 
                 <ImageButton
+                    android:id="@+id/take_picture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:background="@drawable/button_background"
+                    android:contentDescription="@string/tirar_uma_foto"
+                    android:padding="7dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_photo_camera"
+                    tools:ignore="RtlHardcoded" />
+
+                <ImageButton
                     android:id="@+id/add_file"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
-                    tools:ignore="RtlHardcoded" />
-
-                <ImageButton
-                    android:id="@+id/add_camera"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="15dp"
-                    tools:ignore="RtlHardcoded" />
-
-                <ImageButton
-                    android:id="@+id/add_help"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="15dp"
+                    android:background="@drawable/button_background"
+                    android:contentDescription="@string/escolher_uma_foto"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_folder"
                     tools:ignore="RtlHardcoded" />
 
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/selected_image"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/attachment_bar"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="50dp"
+                tools:ignore="ContentDescription" />
 
             <Button
                 android:id="@+id/post_report"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/attachment_bar"
+                android:layout_below="@id/selected_image"
                 android:layout_centerHorizontal="true"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginBottom="10dp"

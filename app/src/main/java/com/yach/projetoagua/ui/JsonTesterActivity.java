@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class JsonTesterActivity extends AppCompatActivity {
 
     private TextView jsonResult;
-    private ProjetoAguaApi projetoAguaApi;
+    //private ProjetoAguaApi projetoAguaApi;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -36,6 +36,7 @@ public class JsonTesterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json_tester);
 
+        /*
         jsonResult = findViewById(R.id.get_json);
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -44,14 +45,15 @@ public class JsonTesterActivity extends AppCompatActivity {
                 .build();
 
         projetoAguaApi = retrofit.create(ProjetoAguaApi.class);
+         */
 
         //getApi();
         //getAllDates();
         //getAllCep();
         //getNews();
-        getFNews();
-        getFEmergency();
-        getFWarning();
+        //getFNews();
+        //getFEmergency();
+        //getFWarning();
     }
 
     public void getFNews() {
@@ -122,6 +124,7 @@ public class JsonTesterActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     public void getFWarning() {
         db.collection("warnings")
