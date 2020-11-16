@@ -26,7 +26,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'org.jetbrains:annotations-java5:15.0'
     implementation 'com.google.firebase:firebase-firestore:21.7.1'
     testImplementation 'junit:junit:4.12'
@@ -34,11 +34,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.loopj.android:android-async-http:1.4.9'
 
+    //noinspection GradleDependency
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    //noinspection GradleDependency
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 
     implementation 'com.google.firebase:firebase-core:17.5.1'

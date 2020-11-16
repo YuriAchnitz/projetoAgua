@@ -67,7 +67,7 @@
             android:contentDescription="@string/botao_noticias"
             android:paddingHorizontal="5dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_icone_report" />
+            android:src="@drawable/ic_icone_news" />
 
         <ImageButton
             android:id="@+id/icon_report"
